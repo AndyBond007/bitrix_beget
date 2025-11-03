@@ -1,0 +1,102 @@
+.my_card_list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+.card {
+    background: #f2f6f7;
+    border-radius: 10px 10px 10px 0px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(161, 161, 161);
+    height: 80px;
+    width:180px;
+    padding:12px;
+    margin:12px;
+    filter: drop-shadow(6px 6px 3px #44d8dd);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    font-weight: 400;
+    font-size:16px;
+    img {
+        height:60px;
+    }
+}
+.card:hover {
+    filter: drop-shadow(6px 6px 3px #81dd44);
+    font-weight: 700;
+    img {
+        height:70px;
+    }    
+}
+h1 {
+    font: 26px/26px Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: 300;
+}
+section.doctors {
+    padding:40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-size:18px;
+}
+.doctor-page {
+    display:block;
+    width:100%;
+}
+.doctor-add-form {
+    display:flex;
+    flex-direction:column;
+}
+.doctor-add-form {
+    width:400px;
+    margin:12px;
+    padding:6px;
+    border-radius:6px;
+    min-height:40px;
+    font-size:16px;
+}
+.doctor-add-form>select,.doctor-add-form>input[type=submit] {
+    width:416px;
+}
+
+.add-buttons {
+    display:flex;
+    justify-content:center;
+    width:100%;
+    margin-top:40px;
+}
+
+.add-buttons button {
+    padding:6px 12px;
+    margin-right:16px;
+    height:32px;
+    border:1px solid #D2CBBD;
+    border-radius:6px;
+}
+.add-buttons button:hover {
+    filter: drop-shadow(6px 6px 3px #81dd44);
+
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea,
+fieldset {
+  width: 100%;
+  border: 1px solid #333;
+  box-sizing: border-box;
+}
+
+input:invalid {
+  box-shadow: 0 0 5px 1px red;
+}
+
+input:focus:invalid {
+  box-shadow: none;
+}
