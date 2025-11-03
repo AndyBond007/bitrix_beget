@@ -52,7 +52,7 @@ section.doctors {
     display:flex;
     flex-direction:column;
 }
-.doctor-add-form {
+.doctor-add-form>* {
     width:400px;
     margin:12px;
     padding:6px;
