@@ -111,17 +111,49 @@ if ($action == 'new' || $action == 'edit') {
 
             CIBlockElement::SetPropertyValues($ID, DoctorsTable::IBLOCK_ID, $procs, 'PROCEDURES');
 
-            if (DoctorsTable::update($_POST['ID'], $_POST)) {
-                header('Location: /doctors');
-                exit();
-            } else
-                'Произошла ошибка обновления записи';
+            if ( $_FILES && $_FILES["file"]["error"] === UPLOAD_ERR_OK ) {
+                print_r($_FILES);
+                print "<P>\n";
+                //Формируем имя файла для загрузки в папку upload/doctors
+                $file_name = $_SERVER['DOCUMENT_ROOT'] . "/upload/doctors/" . $_FILES['file']['name'];
+                move_uploaded_file ($_FILES['file']['tmp_name'], $file_name );
+
+                //Готовим массив данных файла
+                $ar_file = CFile::MakeFileArray( $file_name);
+                //Новая папка для проверки работоспособности метода
+                //Но в эту папку файл не сохраняет
+                $file_name1 = $_SERVER['DOCUMENT_ROOT'] . "/upload/doctors_ext/" . $_FILES['file']['name'];
+                $file_ID = CFile::SaveFile($ar_file, $file_name1, false, false, "", true ); // вызываем метод для сохранения файла на сервере    
+            
+                if ($file_ID > 0) {
+                    echo "Файл успешно загружен! ID файла: " . $file_ID;
+                    $arLoad = Array(
+                        'IBLOCK_ELEMENT_ID' => 17,
+                        'FIRSTNAME' => "Имя менется успешно",
+                        // 'DETAIL_TEXT' => $file_ID,
+                        // хотя на самом деле можно и так указать
+                        'DETAIL_PICTURE' => CFile::MakeFileArray( $file_name ),
+                    );
+
+                    if (!DoctorsTable::update($_POST['ID'], $arLoad) ){  // ошибка при сохранении 
+                        'Произошла ошибка обновления картинки';
+                    }
+                }
+            }
+
+
+
+            // if (DoctorsTable::update($_POST['ID'], $_POST)) {
+            //     header('Location: /doctors');
+            //     exit();
+            // } else
+            //     'Произошла ошибка обновления записи';
         }
-        if ($action = 'new' && DoctorsTable::add($_POST)) {
-            header('Location: /doctors');
-            exit();
-        } else
-            'Произошла ошибка добавления доктора';
+        // if ($action = 'new' && DoctorsTable::add($_POST)) {
+        //     header('Location: /doctors');
+        //     exit();
+        // } else
+        //     'Произошла ошибка добавления доктора';
     }
     $proc_options = ProceduresTable::query()
         ->setSelect(['ID' => 'ELEMENT.ID', 'NAME' => 'ELEMENT.NAME'])
@@ -227,7 +259,7 @@ if (isset($_POST['doctor-delete'])) {
     <?php endif; ?>
 
     <?php if ($action == 'new' || $action == 'edit'): ?>
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
 
             <h2 style="text-align: center;">Информация о докторе</h2>
             <div class="doctor-add-form">
@@ -248,6 +280,7 @@ if (isset($_POST['doctor-delete'])) {
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <input type="file" name="file" id="file" accept=".jpg,.jpeg,.png">
                 <div class="add-buttons">
                     <button type="submit" name="doctor-submit">Сохранить изменения</button>
                 </div>
