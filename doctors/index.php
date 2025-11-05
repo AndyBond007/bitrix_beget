@@ -1,4 +1,5 @@
 <?php
+
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 
 $APPLICATION->SetTitle("Доктора");
@@ -128,8 +129,8 @@ if ($action == 'new' || $action == 'edit') {
                 if ($file_ID > 0) {
                     echo "Файл успешно загружен! ID файла: " . $file_ID;
                     $arLoad = Array(
-                        'IBLOCK_ELEMENT_ID' => 17,
-                        'FIRSTNAME' => "Имя менется успешно",
+                        'IBLOCK_ELEMENT_ID' => $ID,
+                        //'FIRSTNAME' => "Имя менется успешно",   ///Это для проверки того, что изменения идут в БД
                         // 'DETAIL_TEXT' => $file_ID,
                         // хотя на самом деле можно и так указать
                         'DETAIL_PICTURE' => CFile::MakeFileArray( $file_name ),
@@ -143,17 +144,17 @@ if ($action == 'new' || $action == 'edit') {
 
 
 
-            // if (DoctorsTable::update($_POST['ID'], $_POST)) {
-            //     header('Location: /doctors');
-            //     exit();
-            // } else
-            //     'Произошла ошибка обновления записи';
+            if (DoctorsTable::update($_POST['ID'], $_POST)) {
+                header('Location: /doctors');
+                exit();
+            } else
+                 'Произошла ошибка обновления записи';
         }
-        // if ($action = 'new' && DoctorsTable::add($_POST)) {
-        //     header('Location: /doctors');
-        //     exit();
-        // } else
-        //     'Произошла ошибка добавления доктора';
+        if ($action = 'new' && DoctorsTable::add($_POST)) {
+            header('Location: /doctors');
+            exit();
+        } else
+            'Произошла ошибка добавления доктора';
     }
     $proc_options = ProceduresTable::query()
         ->setSelect(['ID' => 'ELEMENT.ID', 'NAME' => 'ELEMENT.NAME'])
