@@ -1,6 +1,6 @@
-BX.namespace('Otus.BookGrid');
+BX.namespace('Anb.DoctorsGrid');
 
-BX.Otus.BookGrid = {
+BX.Anb.DoctorsGrid = {
     signedParams: null,
     init: function(data) {
         this.signedParams = data.signedParams;
@@ -11,12 +11,12 @@ BX.Otus.BookGrid = {
     deleteBook(id) {
         BX.ajax.runComponentAction('otus:book.grid', 'deleteElement', {
             mode: 'class',
-            signedParameters: BX.Otus.BookGrid.signedParams,
+            signedParameters: BX.Anb.DoctorsGrid.signedParams,
             data: {
                 bookId: id,
             },
         }).then(response => {
-            BX.Otus.BookGrid.showMessage('Удалена книга с ID=' + id);
+            BX.Anb.DoctorsGrid.showMessage('Удалена книга с ID=' + id);
             let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
             grid.reload();
         }, reject => {
@@ -25,7 +25,7 @@ BX.Otus.BookGrid = {
                 errorMessage += error.message + '\n';
             }
 
-            BX.Otus.BookGrid.showMessage(errorMessage);
+            BX.Anb.DoctorsGrid.showMessage(errorMessage);
         });
     },
     deleteBookViaAjax(id) {
@@ -35,7 +35,7 @@ BX.Otus.BookGrid = {
                 bookId: id,
             },
         }).then(response => {
-            BX.Otus.BookGrid.showMessage('Удалена книга с ID=' + id);
+            BX.Anb.DoctorsGrid.showMessage('Удалена книга с ID=' + id);
             let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
             grid.reload();
         }, reject => {
@@ -44,13 +44,13 @@ BX.Otus.BookGrid = {
                 errorMessage += error.message + '\n';
             }
 
-            BX.Otus.BookGrid.showMessage(errorMessage);
+            BX.Anb.DoctorsGrid.showMessage(errorMessage);
         });
     },
     addTestBookElement: function () {
         BX.ajax.runComponentAction('otus:book.grid', 'addTestBookElement', {
             mode: 'class',
-            signedParameters: BX.Otus.BookGrid.signedParams,
+            signedParameters: BX.Anb.DoctorsGrid.signedParams,
             data: {
                 bookData: {
                     bookTitle: "Тестовая книга",
@@ -64,7 +64,7 @@ BX.Otus.BookGrid = {
                 },
             },
         }).then(response => {
-            BX.Otus.BookGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
+            BX.Anb.DoctorsGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
             let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
             grid.reload();
         }, reject => {
@@ -73,16 +73,16 @@ BX.Otus.BookGrid = {
                 errorMessage += error.message + '\n';
             }
 
-            BX.Otus.BookGrid.showMessage(errorMessage);
+            BX.Anb.DoctorsGrid.showMessage(errorMessage);
         });
     },
     createAlternativeTestBookElement: function () {
         BX.ajax.runComponentAction('otus:book.grid', 'createTestElement', {
             mode: 'ajax',
-            signedParameters: BX.Otus.BookGrid.signedParams,
+            signedParameters: BX.Anb.DoctorsGrid.signedParams,
             data: null,
         }).then(response => {
-            BX.Otus.BookGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
+            BX.Anb.DoctorsGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
             let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
             grid.reload();
         }, reject => {
@@ -91,7 +91,7 @@ BX.Otus.BookGrid = {
                 errorMessage += error.message + '\n';
             }
 
-            BX.Otus.BookGrid.showMessage(errorMessage);
+            BX.Anb.DoctorsGrid.showMessage(errorMessage);
         });
     },
     createTestElementViaModule: function () {
@@ -99,7 +99,7 @@ BX.Otus.BookGrid = {
             'aholin:crmcustomtab.book.BookController.createTestElement',
             {}
         ).then(response => {
-            BX.Otus.BookGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
+            BX.Anb.DoctorsGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
             let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
             grid.reload();
         }, reject => {
@@ -108,12 +108,12 @@ BX.Otus.BookGrid = {
                 errorMessage += error.message + '\n';
             }
 
-            BX.Otus.BookGrid.showMessage(errorMessage);
+            BX.Anb.DoctorsGrid.showMessage(errorMessage);
         });
     },
 
     addBook: function () {
-        BX.Otus.BookGrid.showForm();
+        BX.Anb.DoctorsGrid.showForm();
     },
 
     showForm: function () {
@@ -130,7 +130,7 @@ BX.Otus.BookGrid = {
                             let form = document.getElementById('book-add-form');
                             form.addEventListener('submit', function (event) {
                                 event.preventDefault();
-                                BX.Otus.BookGrid.createBook(event.target);
+                                BX.Anb.DoctorsGrid.createBook(event.target);
                             });
                             submit.click();
                             this.popupWindow.close();
@@ -158,7 +158,7 @@ BX.Otus.BookGrid = {
             data: data,
         }).then(response => {
             let id = response.data.BOOK_ID;
-            BX.Otus.BookGrid.showMessage('Добавлена книга с ID=' + id);
+            BX.Anb.DoctorsGrid.showMessage('Добавлена книга с ID=' + id);
             let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
             grid.reload();
         }, reject => {
@@ -167,7 +167,7 @@ BX.Otus.BookGrid = {
                 errorMessage += error.message + '\n';
             }
 
-            BX.Otus.BookGrid.showMessage(errorMessage);
+            BX.Anb.DoctorsGrid.showMessage(errorMessage);
         });
     },
 }

@@ -113,7 +113,7 @@ $APPLICATION->IncludeComponent(
     </script>
 <?php } ?>
 <script>
-    BX.Otus.BookGrid.init({
+    BX.Anb.DoctorsGrid.init({
         signedParams: '<?=$this->__component->getSignedParameters()?>'
     });
 </script>

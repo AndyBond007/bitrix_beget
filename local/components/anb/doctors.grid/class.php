@@ -57,12 +57,12 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
                 'default' => true,
             ],
             [
-                'onclick' => sprintf('BX.Otus.BookGrid.deleteBook(%d)', $fields['IBLOCK_ELEMENT_ID']),
+                'onclick' => sprintf('BX.Anb.DoctorsGrid.deleteBook(%d)', $fields['IBLOCK_ELEMENT_ID']),
                 'text' => Loc::getMessage('BOOK_GRID_DELETE'),
                 'default' => true,
             ],
             [
-                'onclick' => sprintf('BX.Otus.BookGrid.deleteBookViaAjax(%d)', $fields['IBLOCK_ELEMENT_ID']),
+                'onclick' => sprintf('BX.Anb.DoctorsGrid.deleteBookViaAjax(%d)', $fields['IBLOCK_ELEMENT_ID']),
                 'text' => Loc::getMessage('BOOK_GRID_DELETE') . ' через AJAX',
                 'default' => true,
             ],
@@ -157,12 +157,12 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
                 'color' => Color::SECONDARY,
             ],
             [
-                'click' => 'BX.Otus.BookGrid.addBook',
+                'click' => 'BX.Anb.DoctorsGrid.addBook',
                 'text' => 'Добавить книгу',
                 'color' => Color::PRIMARY_DARK,
             ],
             [
-                'click' => 'BX.Otus.BookGrid.createTestElementViaModule',
+                'click' => 'BX.Anb.DoctorsGrid.createTestElementViaModule',
                 'text' => 'Добавить тестовую книгу',
                 'color' => Color::DANGER_DARK,
             ],
