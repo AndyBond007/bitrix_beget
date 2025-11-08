@@ -1,0 +1,16 @@
+.my-curr-card {
+    background: #cff9f2;
+    padding: 15px;
+    width: 200px;
+}
+.my-curr_value {
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+    display: flex;
+    justify-content: center;
+}
+.my-curr_text {
+    display: flex;
+    justify-content: center;
+    font-size: 1rem;
+}
