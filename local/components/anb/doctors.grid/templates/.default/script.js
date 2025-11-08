@@ -8,17 +8,27 @@ BX.Anb.DoctorsGrid = {
     showMessage: function (message) {
         alert(message);
     },
-    deleteBook(id) {
-        BX.ajax.runComponentAction('otus:book.grid', 'deleteElement', {
+    deleteDoctor(id) {
+        BX.ajax.runComponentAction('anb:doctors.grid', 'deleteElement', {
             mode: 'class',
             signedParameters: BX.Anb.DoctorsGrid.signedParams,
             data: {
-                bookId: id,
+                doctorId: id,
             },
         }).then(response => {
-            BX.Anb.DoctorsGrid.showMessage('Удалена книга с ID=' + id);
-            let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
-            grid.reload();
+            BX.Anb.DoctorsGrid.showMessage('Удалена запись по доктору с ID=' + id);
+
+            // var reloadParams = { apply_filter: 'Y', clear_nav: 'Y' };
+            // var gridObject = BX.Main.gridManager.getById('DOCTORS_GRID');  // Идентификатор грида
+
+            // if (gridObject.hasOwnProperty('instance')){
+            //     gridObject.instance.reloadTable('POST', reloadParams);
+            // }
+
+            let grid = BX.Main.gridManager.getById('DOCTORS_GRID')?.instance;
+            if (grid) {
+                grid.reload();
+            }
         }, reject => {
             let errorMessage = '';
             for (let error of reject.errors) {
@@ -28,15 +38,15 @@ BX.Anb.DoctorsGrid = {
             BX.Anb.DoctorsGrid.showMessage(errorMessage);
         });
     },
-    deleteBookViaAjax(id) {
-        BX.ajax.runComponentAction('otus:book.grid', 'deleteElement', {
+    deleteDoctorViaAjax(id) {
+        BX.ajax.runComponentAction('anb:doctors.grid', 'deleteElement', {
             mode: 'ajax',
             data: {
-                bookId: id,
+                doctorId: id,
             },
         }).then(response => {
             BX.Anb.DoctorsGrid.showMessage('Удалена книга с ID=' + id);
-            let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
+            let grid = BX.Main.gridManager.getById('DOCTORS_GRID')?.instance;
             grid.reload();
         }, reject => {
             let errorMessage = '';
@@ -48,7 +58,7 @@ BX.Anb.DoctorsGrid = {
         });
     },
     addTestBookElement: function () {
-        BX.ajax.runComponentAction('otus:book.grid', 'addTestBookElement', {
+        BX.ajax.runComponentAction('anb:doctors.grid', 'addTestBookElement', {
             mode: 'class',
             signedParameters: BX.Anb.DoctorsGrid.signedParams,
             data: {
@@ -65,7 +75,7 @@ BX.Anb.DoctorsGrid = {
             },
         }).then(response => {
             BX.Anb.DoctorsGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
-            let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
+            let grid = BX.Main.gridManager.getById('DOCTORS_GRID')?.instance;
             grid.reload();
         }, reject => {
             let errorMessage = '';
@@ -77,13 +87,13 @@ BX.Anb.DoctorsGrid = {
         });
     },
     createAlternativeTestBookElement: function () {
-        BX.ajax.runComponentAction('otus:book.grid', 'createTestElement', {
+        BX.ajax.runComponentAction('anb:doctors.grid', 'createTestElement', {
             mode: 'ajax',
             signedParameters: BX.Anb.DoctorsGrid.signedParams,
             data: null,
         }).then(response => {
             BX.Anb.DoctorsGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
-            let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
+            let grid = BX.Main.gridManager.getById('DOCTORS_GRID')?.instance;
             grid.reload();
         }, reject => {
             let errorMessage = '';
@@ -100,7 +110,7 @@ BX.Anb.DoctorsGrid = {
             {}
         ).then(response => {
             BX.Anb.DoctorsGrid.showMessage('Создана книга с ID=' + response.data.BOOK_ID);
-            let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
+            let grid = BX.Main.gridManager.getById('DOCTORS_GRID')?.instance;
             grid.reload();
         }, reject => {
             let errorMessage = '';
@@ -153,13 +163,13 @@ BX.Anb.DoctorsGrid = {
 
     createBook: function (form) {
         let data = new FormData(form);
-        BX.ajax.runComponentAction('otus:book.grid', 'addBook', {
+        BX.ajax.runComponentAction('anb:doctors.grid', 'addBook', {
             mode: 'ajax',
             data: data,
         }).then(response => {
             let id = response.data.BOOK_ID;
             BX.Anb.DoctorsGrid.showMessage('Добавлена книга с ID=' + id);
-            let grid = BX.Main.gridManager.getById('BOOK_GRID')?.instance;
+            let grid = BX.Main.gridManager.getById('DOCTORS_GRID')?.instance;
             grid.reload();
         }, reject => {
             let errorMessage = '';

@@ -16,7 +16,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
  */
 
 Loader::includeModule('ui');
-// Extension::load(['otus.modal.dialog', 'date']);
+// Extension::load(['anb:doctors.grid.modal.dialog', 'date']);
 foreach ($arResult['BUTTONS'] as $button) {
     Toolbar::addButton($button);
 }

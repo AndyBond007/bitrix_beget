@@ -7,8 +7,6 @@ use Bitrix\Main\UI\PageNavigation;
 use Bitrix\Main\Grid\Options as GridOptions;
 use Bitrix\Main\UI\Filter\Options as FilterOptions;
 use Models\Lists\DoctorsPropertyValuesTable as DoctorsTable;
-// use Otus\Orm\BookTable;
-// use Otus\Orm\AuthorTable;
 use Bitrix\Main\ORM\Query\Result;
 use Bitrix\UI\Buttons\Color;
 use Bitrix\Main\Error;
@@ -20,7 +18,7 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
 {
     use ErrorableImplementation;
 
-    protected const GRID_ID = 'BOOK_GRID';
+    protected const GRID_ID = 'DOCTORS_GRID';
     public function onPrepareComponentParams($arParams): array
     {
         $arParams['BOOK_PREFIX'] = strtolower($arParams['BOOK_PREFIX']);
@@ -50,20 +48,20 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
     {
         return [
             [
-                'onclick' => "window.open('http://otus-08.localhost/bitrix/admin/perfmon_row_edit.php?lang=ru&table_name=aholin_book&pk%5BID%5D={$fields['ID']}')", // метод обработчик в js
+                'onclick' => "window.open('http://anb:doctors.grid-08.localhost/bitrix/admin/perfmon_row_edit.php?lang=ru&table_name=aholin_book&pk%5BID%5D={$fields['ID']}')", // метод обработчик в js
                 'text' => Loc::getMessage('DOCTORS_GRID_OPEN_DOCTOR', [
                     '#DOCTOR_NAME#' => $fields['TITLE'],
                 ]),
                 'default' => true,
             ],
             [
-                'onclick' => sprintf('BX.Anb.DoctorsGrid.deleteBook(%d)', $fields['IBLOCK_ELEMENT_ID']),
-                'text' => Loc::getMessage('BOOK_GRID_DELETE'),
+                'onclick' => sprintf('BX.Anb.DoctorsGrid.deleteDoctor(%d)', $fields['IBLOCK_ELEMENT_ID']),
+                'text' => Loc::getMessage('DOCTORS_GRID_DELETE'),
                 'default' => true,
             ],
             [
-                'onclick' => sprintf('BX.Anb.DoctorsGrid.deleteBookViaAjax(%d)', $fields['IBLOCK_ELEMENT_ID']),
-                'text' => Loc::getMessage('BOOK_GRID_DELETE') . ' через AJAX',
+                'onclick' => sprintf('BX.Anb.DoctorsGrid.deleteDoctorViaAjax(%d)', $fields['IBLOCK_ELEMENT_ID']),
+                'text' => Loc::getMessage('DOCTORS_GRID_DELETE') . ' через AJAX',
                 'default' => true,
             ],
         ];
@@ -89,8 +87,8 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
             return [];
         }
 
-        $bookId = $addResult->getId();
-        $book = DoctorsTable::getByPrimary($bookId)->fetchObject();
+        $doctorId = $addResult->getId();
+        $book = DoctorsTable::getByPrimary($doctorId)->fetchObject();
 
         $authorIds = $bookData['authors'];
         foreach ($authorIds as $authorId) {
@@ -108,7 +106,7 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
         }
 
         return [
-            'BOOK_ID' => $bookId
+            'BOOK_ID' => $doctorId
         ];
     }
 
@@ -153,7 +151,7 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
             ],
             [
                 'link' => '/stream/',
-                'text' => Loc::getMessage('BOOK_GRID_GO_TO_LIVE_STREAM'),
+                'text' => Loc::getMessage('DOCTORS_GRID_GO_TO_LIVE_STREAM'),
                 'color' => Color::SECONDARY,
             ],
             [
@@ -215,7 +213,7 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
             ],
         ]);
 
-        $bookIdsQuery = DoctorsTable::query()
+        $doctorIdsQuery = DoctorsTable::query()
             ->setSelect(['IBLOCK_ELEMENT_ID'])
             ->setFilter($filter)
             ->setLimit($nav->getLimit())
@@ -229,11 +227,11 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
         ;
         $nav->setRecordCount($countQuery->queryCountTotal());
 
-        $bookIds = array_column($bookIdsQuery->exec()->fetchAll() ?? [], 'IBLOCK_ELEMENT_ID');
+        $doctorIds = array_column($doctorIdsQuery->exec()->fetchAll() ?? [], 'IBLOCK_ELEMENT_ID');
 
-        if (!empty($bookIds)) {
+        if (!empty($doctorIds)) {
             $books = DoctorsTable::getList([
-                'filter' => ['IBLOCK_ELEMENT_ID' => $bookIds] + $filter,
+                'filter' => ['IBLOCK_ELEMENT_ID' => $doctorIds] + $filter,
                 'select' => [
                     'IBLOCK_ELEMENT_ID',
                     'SURNAME',
@@ -264,12 +262,20 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
         $filter = [];
 
         if (!empty($filterData['FIND'])) {
-            $filter['%TITLE'] = $filterData['FIND'];
+            $filter['%SURNAME'] = $filterData['FIND'];
         }
 
-        // if (!empty($filterData['TITLE'])) {
-        //     $filter['%TITLE'] = $filterData['TITLE'];
-        // }
+        if (!empty($filterData['SURNAME'])) {
+            $filter['%SURNAME'] = $filterData['SURNAME'];
+        }
+
+        if (!empty($filterData['FIRSTNAME'])) {
+            $filter['%FIRSTNAME'] = $filterData['FIRSTNAME'];
+        }
+        
+        if (!empty($filterData['MIDNAME'])) {
+            $filter['%SURNMIDNAMEME'] = $filterData['MIDNAME'];
+        }        
 
         // if (!empty($filterData['YEAR_from'])) {
         //     $filter['>=YEAR'] = $filterData['YEAR_from'];
@@ -296,10 +302,10 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
         $groupedBooks = [];
 
         while ($book = $books->fetch()) {
-            $bookId = $book['IBLOCK_ELEMENT_ID'];
+            $doctorId = $book['IBLOCK_ELEMENT_ID'];
 
-            if (!isset($groupedBooks[$bookId])) {
-                $groupedBooks[$bookId] = [
+            if (!isset($groupedBooks[$doctorId])) {
+                $groupedBooks[$doctorId] = [
                     'IBLOCK_ELEMENT_ID' => $book['IBLOCK_ELEMENT_ID'],
                     'SURNAME' => $book['SURNAME'],
                     'FIRSTNAME' => $book['FIRSTNAME'],
@@ -313,7 +319,7 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
             }
 
             // if ($book['AUTHOR_ID']) {
-            //     $groupedBooks[$bookId]['AUTHORS'][] = implode(' ', array_filter([
+            //     $groupedBooks[$doctorId]['AUTHORS'][] = implode(' ', array_filter([
             //         $book['AUTHOR_LAST_NAME'],
             //         $book['AUTHOR_FIRST_NAME'],
             //         $book['AUTHOR_SECOND_NAME']
@@ -377,12 +383,12 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
         ];
     }
 
-    public function deleteElementAction(int $bookId): array
+    public function deleteElementAction(int $doctorId): array
     {
         $this->errorCollection = new ErrorCollection();
         try {
             $ormClass = $this->arParams['ORM_CLASS'];
-            $ormClass::delete($bookId);
+            $ormClass::delete($doctorId);
         } catch (Exception $e) {
             $this->errorCollection->add([new Error($e->getMessage())]);
         }

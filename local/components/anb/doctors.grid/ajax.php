@@ -1,7 +1,7 @@
 <?php
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
-use Otus\Orm\BookTable;
+use Models\Lists\DoctorsPropertyValuesTable as DoctorsTable;
 use Bitrix\Main\Error;
 
 class BookGridAjaxController extends \Bitrix\Main\Engine\Controller
@@ -47,12 +47,12 @@ class BookGridAjaxController extends \Bitrix\Main\Engine\Controller
         return $result;
     }
 
-    public function deleteElementAction(int $bookId): array
+    public function deleteElementAction(int $doctorId): array
     {
         $result = [];
 
         try {
-            $deleteResult = BookTable::delete($bookId);
+            $deleteResult = DoctorsTable::delete($doctorId);
 
             if ($deleteResult->isSuccess()) {
                 return $result;
