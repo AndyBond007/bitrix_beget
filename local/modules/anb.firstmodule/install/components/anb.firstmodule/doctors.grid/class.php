@@ -70,7 +70,7 @@ class DoctorsGrid extends \CBitrixComponent implements Controllerable, Errorable
     }
 
     /**
-     * Метод для формирования действий компонента
+     * Метод для формирования действий компонента по гамбургеру
      * @param array $fields Доступные поля
      * @return array Массив действий
      */      
@@ -88,18 +88,18 @@ class DoctorsGrid extends \CBitrixComponent implements Controllerable, Errorable
                 ]),
                 'default' => true,
             ],
-            [
-                //Удаление элемента таблицы
-                'onclick' => sprintf( 'BX.Anb.DoctorsGrid.deleteDoctor(%d)', $fields[ 'IBLOCK_ELEMENT_ID' ] ),
-                'text' => Loc::getMessage( 'DOCTORS_GRID_DELETE' ),
-                'default' => true,
-            ],
-            [
-                //Удаление элемента таблицы
-                'onclick' => sprintf( 'BX.Anb.DoctorsGrid.deleteDoctorViaAjax(%d)', $fields[ 'IBLOCK_ELEMENT_ID' ] ),
-                'text' => Loc::getMessage('DOCTORS_GRID_DELETE') . ' через AJAX',
-                'default' => true,
-            ],
+            // [
+            //     //Удаление элемента таблицы
+            //     'onclick' => sprintf( 'BX.Anb.DoctorsGrid.deleteDoctor(%d)', $fields[ 'IBLOCK_ELEMENT_ID' ] ),
+            //     'text' => Loc::getMessage( 'DOCTORS_GRID_DELETE' ),
+            //     'default' => true,
+            // ],
+            // [
+            //     //Удаление элемента таблицы
+            //     'onclick' => sprintf( 'BX.Anb.DoctorsGrid.deleteDoctorViaAjax(%d)', $fields[ 'IBLOCK_ELEMENT_ID' ] ),
+            //     'text' => Loc::getMessage('DOCTORS_GRID_DELETE') . ' через AJAX',
+            //     'default' => true,
+            // ],
         ];
     }
 
