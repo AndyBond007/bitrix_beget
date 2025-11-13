@@ -14,29 +14,54 @@ use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\Errorable;
 use Bitrix\Main\ErrorableImplementation;
 
-class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
+/**
+ * Основной класс компонента отображения таблицы докторов
+ */
+class DoctorsGrid extends \CBitrixComponent implements Controllerable, Errorable
 {
     use ErrorableImplementation;
 
+    /**
+     * Идентификатор таблицы 
+     */
     protected const GRID_ID = 'DOCTORS_GRID';
+    
+    /**
+     * Метод для обработки получаемых параметров компонента
+     * @param $arParams Входящие параметры
+     * @return array Парамеры
+     */    
     public function onPrepareComponentParams($arParams): array
     {
-        $arParams['BOOK_PREFIX'] = strtolower($arParams['BOOK_PREFIX']);
+        //Дополнительная обработка параметров
+        $arParams[ 'ELEMENT_PREFIX' ] = strtolower( $arParams[ 'ELEMENT_PREFIX' ] );
         return $arParams;
     }
 
+    /**
+     * Метод для формирования параметров компонента, доступных из аякс
+     * @return array Парамеры
+     */
     public function listKeysSignedParameters(): array
     {
-        return [
+        return 
+        [
             'ORM_CLASS',
         ];
     }
 
+    /**
+     * Конфигурация действия (префильтры и т.д.)
+     * @return array Конфигурация
+     */
     public function configureActions(): array
     {
-        return [
-            'deleteElement' => [
-                'preFilters' => [
+        return 
+        [
+            'deleteElement' => 
+            [
+                'preFilters' => 
+                [
                     new \Bitrix\Main\Engine\ActionFilter\Authentication,
                 ],
             ],
@@ -44,23 +69,34 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
         ];
     }
 
-    private function getElementActions(array $fields): array
+    /**
+     * Метод для формирования действий компонента
+     * @param array $fields Доступные поля
+     * @return array Массив действий
+     */      
+    private function getElementActions( array $fields ): array
     {
-        return [
+        return 
+        [
             [
-                'onclick' => "window.open('{$SITE_DIR}/doctors/{$fields['TITLE']}')", // метод обработчик в js
-                'text' => Loc::getMessage('DOCTORS_GRID_OPEN_DOCTOR', [
-                    '#DOCTOR_NAME#' => $fields['SURNAME'],
+                //Действие по двойному клику по строке (открытие элемента в новом окне)
+                //Формируем ссылку и текст всплывающей подсказки
+                'onclick' => "window.open( '{$SITE_DIR}/doctors/{$fields['TITLE']}')", 
+                'text' => Loc::getMessage( 'DOCTORS_GRID_OPEN_DOCTOR', 
+                [
+                    '#ELEMENT_NAME#' => $fields[ 'SURNAME' ],
                 ]),
                 'default' => true,
             ],
             [
-                'onclick' => sprintf('BX.Anb.DoctorsGrid.deleteDoctor(%d)', $fields['IBLOCK_ELEMENT_ID']),
-                'text' => Loc::getMessage('DOCTORS_GRID_DELETE'),
+                //Удаление элемента таблицы
+                'onclick' => sprintf( 'BX.Anb.DoctorsGrid.deleteDoctor(%d)', $fields[ 'IBLOCK_ELEMENT_ID' ] ),
+                'text' => Loc::getMessage( 'DOCTORS_GRID_DELETE' ),
                 'default' => true,
             ],
             [
-                'onclick' => sprintf('BX.Anb.DoctorsGrid.deleteDoctorViaAjax(%d)', $fields['IBLOCK_ELEMENT_ID']),
+                //Удаление элемента таблицы
+                'onclick' => sprintf( 'BX.Anb.DoctorsGrid.deleteDoctorViaAjax(%d)', $fields[ 'IBLOCK_ELEMENT_ID' ] ),
                 'text' => Loc::getMessage('DOCTORS_GRID_DELETE') . ' через AJAX',
                 'default' => true,
             ],
@@ -68,51 +104,58 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
     }
 
     /**
-     * @throws \Bitrix\Main\ObjectPropertyException
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\SystemException
-     */
-    public function addTestBookElementAction(array $bookData): array
+     * Метод добавления тестовой записи в таблицу
+     * @param array $elementData Данные для добавления тестовой записи
+     * @return array ID
+     */ 
+    public function addTestElementAction( array $elementData ): array
     {
-        $newBookData = [
-            'TITLE' => $this->arParams['BOOK_PREFIX'] . $bookData['bookTitle'] ?? '',
-            'YEAR' => $bookData['publishYear'] ?? 2000,
-            'PAGES' => $bookData['pageCount'] ?? 0,
-            'PUBLISH_DATE' => DateTime::createFromText($bookData['publishDate'] ?? ''),
+        $newElementData = 
+        [
+            'TITLE' => $this->arParams[ 'ELEMENT_PREFIX' ] . $elementData[ 'elementTitle' ] ?? '',
+            'DATE' => DateTime::createFromText( $elementData[ 'Date' ] ?? '' ),
         ];
 
-        $addResult = DoctorsTable::add($newBookData);
-        if (!$addResult->isSuccess()) {
-            $this->errorCollection->add([new Error('Не удалось создать книгу')]);
+        $addResult = DoctorsTable::add( $newElementData );
+        if ( !$addResult->isSuccess() ) 
+        {
+            $this->errorCollection->add( [ new Error( 'Не удалось создать запись') ] );
             return [];
         }
 
-        $doctorId = $addResult->getId();
-        $book = DoctorsTable::getByPrimary($doctorId)->fetchObject();
+        $newElementId = $addResult->getId();
+        $newElement = DoctorsTable::getByPrimary( $newElementId )->fetchObject();
 
-        $authorIds = $bookData['authors'];
-        foreach ($authorIds as $authorId) {
-            $author = AuthorTable::getByPrimary($authorId)->fetchObject();
-            if ($author) {
-                $book->addToAuthors($author);
-            }
-        }
+        //Шаблон для добавления связей
+        // $authorIds = $elementData[ 'authors' ];
+        // foreach ( $authorIds as $authorId ) 
+        // {
+        //     $author = AuthorTable::getByPrimary($authorId)->fetchObject();
+        //     if ($author) {
+        //         $newElement->addToAuthors($author);
+        //     }
+        // }
+        // $updateResult = $newElement->save();
+        // if ( !$updateResult->isSuccess() ) 
+        // {
+        //     $this->errorCollection->add( [ new Error( 'Не удалось добавить авторов')]);
+        //     return [];
+        // }
 
-        $updateResult = $book->save();
-
-        if (!$updateResult->isSuccess()) {
-            $this->errorCollection->add([new Error('Не удалось добавить авторов')]);
-            return [];
-        }
-
-        return [
-            'BOOK_ID' => $doctorId
+        return
+        [
+            'NEW_ELEMENT_ID' => $newElementId
         ];
     }
 
+    /**
+     * Метод формирования заголовков таблицы
+     * @return array Массив заголовков
+     */ 
     private function getHeaders(): array
     {
-        return [
+        return 
+        [
             [
                 'id' => 'IBLOCK_ELEMENT_ID',
                 'name' => 'ID',
@@ -121,59 +164,69 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
             ],
             [
                 'id' => 'SURNAME',
-                'name' => Loc::getMessage('DOCTORS_GRID_DOCTOR_SURNAME_LABEL'),
+                'name' => Loc::getMessage( 'DOCTORS_GRID_DOCTOR_SURNAME_LABEL' ),
                 'sort' => 'SURNAME',
                 'default' => true,
             ],
             [
                 'id' => 'FIRSTNAME',
-                'name' => Loc::getMessage('DOCTORS_GRID_DOCTOR_FIRSTNAME_LABEL'),
+                'name' => Loc::getMessage( 'DOCTORS_GRID_DOCTOR_FIRSTNAME_LABEL' ),
                 'sort' => 'FIRSTNAME',
                 'default' => true,
             ],
             [
                 'id' => 'MIDNAME',
-                'name' => Loc::getMessage('DOCTORS_GRID_DOCTOR_MIDNAME_LABEL'),
+                'name' => Loc::getMessage( 'DOCTORS_GRID_DOCTOR_MIDNAME_LABEL' ),
                 'sort' => 'MIDNAME',
                 'default' => true,
             ],
         ];
     }
 
+    /**
+     * Метод формирования дополнительных кнопок
+     * @return array Массив заголовков
+     */     
     protected function getButtons(): array
     {
         return [
             [
-                // 'link' - ссылка
-                'click' => 'redirectToExcel', // метод обработчик в js
-                'text' => Loc::getMessage('EXPORT_XLSX_BUTTON_TITLE'),
+                'click' => 'redirectToExcel', // 'click' - метод обработчик в js, 'link' - ссылка
+                'text' => Loc::getMessage( 'DOCTORS_GRID_EXPORT_XLSX_BUTTON' ),
                 'color' => Color::PRIMARY,
             ],
             [
                 'link' => '/stream/',
-                'text' => Loc::getMessage('DOCTORS_GRID_GO_TO_LIVE_STREAM'),
+                'text' => Loc::getMessage( 'DOCTORS_GRID_GO_TO_LIVE_STREAM' ),
                 'color' => Color::SECONDARY,
             ],
             [
                 'click' => 'BX.Anb.DoctorsGrid.addBook',
-                'text' => 'Добавить книгу',
+                'text' => Loc::getMessage( 'DOCTORS_GRID_ADD_ELEMENT' ),
                 'color' => Color::PRIMARY_DARK,
             ],
             [
                 'click' => 'BX.Anb.DoctorsGrid.createTestElementViaModule',
-                'text' => 'Добавить тестовую книгу',
+                'text' => Loc::getMessage( 'DOCTORS_GRID_ADD_TEST_ELEMENT' ),
                 'color' => Color::DANGER_DARK,
             ],
         ];
     }
 
+    /**
+     * Основной метод компонента
+     */
     public function executeComponent(): void
     {
-        if ($this->request->get('EXPORT_MODE') == 'Y') {
-            $this->setTemplateName('excel');
+        //Если из необходимо выполнить экспорт - меняем шаблон 
+        if ( $this->request->get( 'EXPORT_MODE' ) == 'Y') 
+        {
+            $this->setTemplateName( 'excel' );
         }
 
-        $this->arResult['BUTTONS'] = $this->getButtons();
+        //Заполняем данные
+        $this->arResult[ 'BUTTONS' ] = $this->getButtons();
+        //Готовим данные таблицы
         $this->prepareGridData();
 
         $this->includeComponentTemplate();
@@ -181,28 +234,37 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
 
     private function prepareGridData(): void
     {
-        $this->arResult['HEADERS'] = $this->getHeaders();
-        $this->arResult['FILTER_ID'] = self::GRID_ID;
+        //Заполняем заголовки
+        $this->arResult[ 'HEADERS' ] = $this->getHeaders();
+        //Устанавливаем идентификатор фильтров (и грида)
+        $this->arResult[ 'FILTER_ID' ] = self::GRID_ID;
 
-        $gridOptions = new GridOptions($this->arResult['FILTER_ID']);
-        $this->arResult['USED_HEADERS'] = $gridOptions->getUsedColumns($this->arResult['HEADERS']);
+        //Создаем опции грида
+        $gridOptions = new GridOptions( $this->arResult[ 'FILTER_ID' ] );
+        //Устанавливаем используемые колонки
+        $this->arResult[ 'USED_HEADERS' ] = $gridOptions->getUsedColumns( $this->arResult[ 'HEADERS' ] );
+        //Формируем параметры навигации
         $navParams = $gridOptions->getNavParams();
+        $nav = new PageNavigation( $this->arResult[ 'FILTER_ID' ] );
 
-        $nav = new PageNavigation($this->arResult['FILTER_ID']);
-
-        $nav->allowAllRecords(true)
-            ->setPageSize($navParams['nPageSize'])
+        $nav->allowAllRecords( true )
+            ->setPageSize( $navParams[ 'nPageSize' ] )
             ->initFromUri();
 
-        $filterOption = new FilterOptions($this->arResult['FILTER_ID']);
+        //Настройка фильтра
+        $filterOption = new FilterOptions( $this->arResult[ 'FILTER_ID' ] );
         $filterData = $filterOption->getFilter([]);
-        $filter = $this->prepareFilter($filterData);
+        $filter = $this->prepareFilter( $filterData );
 
-        $sort = $gridOptions->getSorting([
-            'sort' => [
+        //Сортировка
+        $sort = $gridOptions->getSorting(
+        [
+            'sort' => 
+            [
                 'IBLOCK_ELEMENT_ID' => 'DESC',
             ],
-            'vars' => [
+            'vars' => 
+            [
                 'by' => 'by',
                 'order' => 'order',
             ],

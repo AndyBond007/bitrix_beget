@@ -57,13 +57,13 @@ BX.Anb.DoctorsGrid = {
             BX.Anb.DoctorsGrid.showMessage(errorMessage);
         });
     },
-    addTestBookElement: function () {
-        BX.ajax.runComponentAction('anb:doctors.grid', 'addTestBookElement', {
+    addTestElement: function () {
+        BX.ajax.runComponentAction('anb:doctors.grid', 'addTestElement', {
             mode: 'class',
             signedParameters: BX.Anb.DoctorsGrid.signedParams,
             data: {
                 bookData: {
-                    bookTitle: "Тестовая книга",
+                    elementTitle: "Тестовая книга",
                     authors: [
                         1, // идентификатор автора в таблица aholin_author
                         2,
@@ -128,7 +128,7 @@ BX.Anb.DoctorsGrid = {
 
     showForm: function () {
         let popup = BX.PopupWindowManager.create('book-add-form', null, {
-            content: '<form content="multipart/form-data" id="book-add-form"><input name="bookTitle"><input type="submit" value="Применить"></form>',
+            content: '<form content="multipart/form-data" id="book-add-form"><input name="elementTitle"><input type="submit" value="Применить"></form>',
             darkMode: true,
             buttons: [
                 new BX.PopupWindowButton({

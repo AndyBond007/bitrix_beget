@@ -2,7 +2,13 @@
 $MESS['DOCTORS_GRID_DOCTOR_SURNAME_LABEL'] = 'Фамилия';
 $MESS['DOCTORS_GRID_DOCTOR_FIRSTNAME_LABEL'] = 'Имя';
 $MESS['DOCTORS_GRID_DOCTOR_MIDNAME_LABEL'] = 'Отчество';
-$MESS['DOCTORS_GRID_OPEN_DOCTOR'] = 'Открыть данные по доктору #DOCTOR_NAME#';
+$MESS['DOCTORS_GRID_OPEN_DOCTOR'] = 'Открыть данные по доктору #ELEMENT_NAME#';
+$MESS['DOCTORS_GRID_EXPORT_XLSX_BUTTON'] = 'Выгрузка в Excel';
+$MESS['DOCTORS_GRID_GO_TO_LIVE_STREAM'] = 'Живая лента';
+$MESS['DOCTORS_GRID_ADD_ELEMENT'] = 'Добавить доктора';
+$MESS['DOCTORS_GRID_ADD_TEST_ELEMENT'] = 'Добавить тестовую запись';
+
+
 
 
 $MESS['DOCTORS_GRID_BOOK_TITLE_LABEL'] = 'Название книги';
@@ -10,9 +16,9 @@ $MESS['DOCTORS_GRID_BOOK_PUBLISHING_YEAR_LABEL'] = 'Год публикации'
 $MESS['DOCTORS_GRID_BOOK_PAGES_LABEL'] = 'Количество страниц';
 $MESS['DOCTORS_GRID_BOOK_AUTHORS_LABEL'] = 'Авторы';
 $MESS['DOCTORS_GRID_BOOK_PUBLISHING_DATE_LABEL'] = 'Дата публикации';
-$MESS['EXPORT_XLSX_BUTTON_TITLE'] = 'Выгрузка в Excel';
+
 $MESS['ADD_TEST_BOOK_BUTTON_TITLE'] = 'Добавить тестовую книгу';
 $MESS['DOCTORS_GRID_BOOK_PUBLISHING_DEAL_LABEL'] = 'Сделка';
-$MESS['DOCTORS_GRID_GO_TO_LIVE_STREAM'] = 'Живая лента';
+
 $MESS['DOCTORS_GRID_OPEN_BOOK'] = 'Открыть книгу #BOOK_NAME#';
 $MESS['DOCTORS_GRID_DELETE'] = 'Удалить книгу';
