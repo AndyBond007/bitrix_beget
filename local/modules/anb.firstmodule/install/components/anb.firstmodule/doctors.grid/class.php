@@ -7,6 +7,7 @@ use Bitrix\Main\UI\PageNavigation;
 use Bitrix\Main\Grid\Options as GridOptions;
 use Bitrix\Main\UI\Filter\Options as FilterOptions;
 use Models\Lists\DoctorsPropertyValuesTable as DoctorsTable;
+use Models\Lists\ProceduresPropertyValuesTable as ProceduresTable;
 use Bitrix\Main\ORM\Query\Result;
 use Bitrix\UI\Buttons\Color;
 use Bitrix\Main\Error;
@@ -180,6 +181,12 @@ class DoctorsGrid extends \CBitrixComponent implements Controllerable, Errorable
                 'sort' => 'MIDNAME',
                 'default' => true,
             ],
+            [
+                'id' => 'PROCEDURES',
+                'name' => Loc::getMessage( 'DOCTORS_GRID_DOCTOR_PROC_LABEL' ),
+                'sort' => 'PROCEDURES',
+                'default' => true,
+            ],            
         ];
     }
 
@@ -295,13 +302,7 @@ class DoctorsGrid extends \CBitrixComponent implements Controllerable, Errorable
                     'SURNAME',
                     'FIRSTNAME',
                     'MIDNAME',
-                    // 'YEAR',
-                    // 'PAGES',
-                    // 'PUBLISH_DATE',
-                    // 'AUTHOR_ID' => 'AUTHORS.ID',
-                    // 'AUTHOR_FIRST_NAME' => 'AUTHORS.FIRST_NAME',
-                    // 'AUTHOR_LAST_NAME' => 'AUTHORS.LAST_NAME',
-                    // 'AUTHOR_SECOND_NAME' => 'AUTHORS.SECOND_NAME',
+                    'PROCEDURES',
                 ],
                 'order' => $sort['sort'],
             ]);
@@ -335,72 +336,56 @@ class DoctorsGrid extends \CBitrixComponent implements Controllerable, Errorable
             $filter['%SURNMIDNAMEME'] = $filterData['MIDNAME'];
         }        
 
-        // if (!empty($filterData['YEAR_from'])) {
-        //     $filter['>=YEAR'] = $filterData['YEAR_from'];
-        // }
-
-        // if (!empty($filterData['YEAR_to'])) {
-        //     $filter['<=YEAR'] = $filterData['YEAR_to'];
-        // }
-
-        // if (!empty($filterData['PUBLISH_DATE_from'])) {
-        //     $filter['>=PUBLISH_DATE'] = $filterData['PUBLISH_DATE_from'];
-        // }
-
-        // if (!empty($filterData['PUBLISH_DATE_to'])) {
-        //     $filter['<=PUBLISH_DATE'] = $filterData['PUBLISH_DATE_to'];
-        // }
-
         return $filter;
     }
 
-    private function prepareGridList(Result $books): array
+    private function prepareGridList( Result $rows ): array
     {
         $gridList = [];
-        $groupedBooks = [];
+        $simpleData = [];
 
-        while ($book = $books->fetch()) {
-            $doctorId = $book['IBLOCK_ELEMENT_ID'];
+        while ( $row = $rows->fetch() ) 
+        {
+            $doctorId = $row[ 'IBLOCK_ELEMENT_ID' ];
 
-            if (!isset($groupedBooks[$doctorId])) {
-                $groupedBooks[$doctorId] = [
-                    'IBLOCK_ELEMENT_ID' => $book['IBLOCK_ELEMENT_ID'],
-                    'TITLE' => $book['TITLE'],
-                    'SURNAME' => $book['SURNAME'],
-                    'FIRSTNAME' => $book['FIRSTNAME'],
-                    'MIDNAME' => $book['MIDNAME'],
-                    // 'TITLE' => $book['TITLE'],
-                    // 'YEAR' => $book['YEAR'],
-                    // 'PAGES' => $book['PAGES'],
-                    // // 'PUBLISH_DATE' => $book['PUBLISH_DATE'],
-                    // // 'AUTHORS' => [],
+            if ( !isset( $simpleData[ $doctorId ] ) ) 
+            {
+                $simpleData[ $doctorId ] = 
+                [
+                    'IBLOCK_ELEMENT_ID' => $row[ 'IBLOCK_ELEMENT_ID' ],
+                    'TITLE' => $row[ 'TITLE' ],
+                    'SURNAME' => $row[ 'SURNAME' ],
+                    'FIRSTNAME' => $row[ 'FIRSTNAME' ],
+                    'MIDNAME' => $row[ 'MIDNAME' ],
+                    'PROCEDURES' => [],
                 ];
             }
 
-            // if ($book['AUTHOR_ID']) {
-            //     $groupedBooks[$doctorId]['AUTHORS'][] = implode(' ', array_filter([
-            //         $book['AUTHOR_LAST_NAME'],
-            //         $book['AUTHOR_FIRST_NAME'],
-            //         $book['AUTHOR_SECOND_NAME']
-            //     ]));
-            // }
-        }
+            if ( $row[ 'PROCEDURES' ] ) 
+            {
+                $procs = ProceduresTable::query()
+                    ->setSelect( [ 'NAME' => 'ELEMENT.NAME' ] )
+                    ->where( "ELEMENT.ID", "in", $row[ 'PROCEDURES' ] )
+                    ->fetchAll();
+                    $simpleData[ $doctorId ][ 'PROCEDURES' ] = [];
+                foreach( $procs as $row )
+                $simpleData[ $doctorId ][ 'PROCEDURES' ][] = $row[ 'NAME' ];
+            }
 
-        foreach ($groupedBooks as $book) {
-            $gridList[] = [
+        }
+        foreach ( $simpleData as $row ) 
+            {
+            $gridList[] = 
+            [
                 'data' => [
-                    'IBLOCK_ELEMENT_ID' => $book['IBLOCK_ELEMENT_ID'],
-                    'TITLE' => $book['TITLE'],
-                    'SURNAME' => $book['SURNAME'],
-                    'FIRSTNAME' => $book['FIRSTNAME'],
-                    'MIDNAME' => $book['MIDNAME'],                    
-                    // 'TITLE' => $book['TITLE'],
-                    // 'YEAR' => $book['YEAR'],
-                    // 'PAGES' => $book['PAGES'],
-                    // 'AUTHORS' => implode(', ', $book['AUTHORS']),
-                    // 'PUBLISH_DATE' => $book['PUBLISH_DATE']?->format('d.m.Y'),
+                    'IBLOCK_ELEMENT_ID' => $row[ 'IBLOCK_ELEMENT_ID' ],
+                    'TITLE' => $row[ 'TITLE' ],
+                    'SURNAME' => $row[ 'SURNAME' ],
+                    'FIRSTNAME' => $row[ 'FIRSTNAME' ],
+                    'MIDNAME' => $row[ 'MIDNAME' ], 
+                    'PROCEDURES' => implode( ', ', $row[ 'PROCEDURES' ] ),                               
                 ],
-                'actions' => $this->getElementActions($book),
+                'actions' => $this->getElementActions( $row ),
             ];
         }
 
@@ -428,18 +413,6 @@ class DoctorsGrid extends \CBitrixComponent implements Controllerable, Errorable
                 'type' => 'string',
                 'default' => true,
             ],            
-            // [
-            //     'id' => 'FIRSTNAME',
-            //     'name' => Loc::getMessage('DOCTORS_GRID_DOCTOR_FIRSTNAME_LABEL'),
-            //     'type' => 'number',
-            //     'default' => true,
-            // ],
-            // [
-            //     'id' => 'MIDNAME',
-            //     'name' => Loc::getMessage('DOCTORS_GRID_DOCTOR_MIDNAME_LABEL'),
-            //     'type' => 'date',
-            //     'default' => true,
-            // ],
         ];
     }
 
