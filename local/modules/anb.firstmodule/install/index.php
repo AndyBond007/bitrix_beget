@@ -4,6 +4,7 @@ use Bitrix\Main\SystemException;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
 use Bitrix\Main\IO\Directory;
+use Bitrix\Main\EventManager;
 
 //Класс установщика модуля
 class anb_firstmodule extends CModule
@@ -107,19 +108,19 @@ class anb_firstmodule extends CModule
 	 */
     private function installHelpersTable(): void
     {
-        $connection = Application::getConnection();
-        $tableName = 'aholin_book_author';
+        // $connection = Application::getConnection();
+        // $tableName = 'aholin_book_author';
 
-        if ( !$connection->isTableExists( $tableName ) ) 
-		{
-            $connection->queryExecute("
-            	CREATE TABLE {$tableName} (
-                	BOOK_ID int NOT NULL,
-                	AUTHOR_ID int NOT NULL,
-                	PRIMARY KEY (BOOK_ID, AUTHOR_ID)
-            	)
-        	");
-        }
+        // if ( !$connection->isTableExists( $tableName ) ) 
+		// {
+        //     $connection->queryExecute("
+        //     	CREATE TABLE {$tableName} (
+        //         	BOOK_ID int NOT NULL,
+        //         	AUTHOR_ID int NOT NULL,
+        //         	PRIMARY KEY (BOOK_ID, AUTHOR_ID)
+        //     	)
+        // 	");
+        // }
     }
 
 	/**
@@ -127,20 +128,20 @@ class anb_firstmodule extends CModule
 	 */
     private function uninstallHelpersTable(): void
     {
-        $connection = Application::getConnection();
-        $tableName = 'aholin_book_author';
+        // $connection = Application::getConnection();
+        // $tableName = 'aholin_book_author';
 
-        if ( $connection->isTableExists( $tableName ) ) 
-		{
-            $connection->dropTable( $tableName );
-        }
+        // if ( $connection->isTableExists( $tableName ) ) 
+		// {
+        //     $connection->dropTable( $tableName );
+        // }
     }
 
 	/**
 	 * Метод установки модуля
 	 * Выполняет все основные требуемые методы для установки и настройки модуля
 	 */
-	public function DoInstall()
+	public function DoInstall(): void
 	{
 		//Проверяем, чтобы установка выполнялась от Администратора
 		global $USER;
@@ -156,8 +157,8 @@ class anb_firstmodule extends CModule
 			$this->InstallFiles();
 			//Создаем требуемые таблицы в БД и записи
 			$this->InstallDB();
-			//
-			//$this->InstallEvents();
+			//Устанавливаем обработчики событий
+			$this->InstallEvents();
 
 			//Добавить проверку ошибок копирования файлов, создания БД и т.д.
 			//Регистрируем модуль
@@ -168,7 +169,7 @@ class anb_firstmodule extends CModule
 	/**
 	 * Копирование требуемых файлов модуля (компоненты, стили, админка и т.д.)
 	 */
-	public function InstallFiles()
+	public function InstallFiles(): void
 	{
 		//Необходимо копировать все файлы включая административную часть
         $component_path = $this->getPath() . '/install/components';
@@ -186,7 +187,7 @@ class anb_firstmodule extends CModule
 	/**
 	 * Создаем требуемые таблицы и наполняем их данными
 	 */
-	public function InstallDB()
+	public function InstallDB(): void
 	{
         // Loader::includeModule( $this->MODULE_ID );
 
@@ -209,9 +210,25 @@ class anb_firstmodule extends CModule
 	}
 
 	/**
+	 * Устанавливаем обработчики событий
+	 */
+	public function InstallEvents(): void
+	{
+		$eventManager = EventManager::getInstance();
+
+		$eventManager->registerEventHandler(
+			'crm',
+			'onEntityDetailsTabsInitialized',
+			$this->MODULE_ID, 
+			'\\Anb\\Firstmodule\\Crm\\Handlers',
+			'updateTabs'
+		);
+	} 
+
+	/**
 	 * Выполнение удаления модуля
 	 */
-	public function DoUninstall()
+	public function DoUninstall(): void
 	{
 		//Проверяем, чтобы установка выполнялась от Администратора
 		global $USER;
@@ -226,14 +243,16 @@ class anb_firstmodule extends CModule
 		//Удаляем созданные таблицы в БД и записи
 		//TODO добавить вопрос на удаление ???
 		$this->UnInstallDB();
+		//Удаляем обработчики событий
+		$this->UnInstallEvents();		
 		//Удаляем регистрацию модуля
 		ModuleManager::unRegisterModule($this->MODULE_ID);
 	}
 
 	/**
-	 * 
+	 * Удаление установленных файлов модуля (компоненты, стили, админка и т.д.)
 	 */
-	public function UnInstallFiles()
+	public function UnInstallFiles(): void
 	{
         $component_path = $this->getPath() . '/install/components';
 
@@ -260,7 +279,7 @@ class anb_firstmodule extends CModule
 	/**
 	 * Удаляем ранее созданные таблицы
 	 */
-	public function UnInstallDB()
+	public function UnInstallDB(): void
 	{
         // Loader::includeModule( $this->MODULE_ID) ;
 
@@ -276,6 +295,22 @@ class anb_firstmodule extends CModule
         //     }
         // }
 	}
+
+	/**
+	 * Удаляем обработчики событий
+	 */
+	public function UnInstallEvents(): void
+	{
+		$eventManager = EventManager::getInstance();
+
+		$eventManager->unRegisterEventHandler(
+			'crm',
+			'onEntityDetailsTabsInitialized',
+			$this->MODULE_ID, 
+			'\\Anb\\Firstmodule\\Crm\\Handlers',
+			'updateTabs'
+		);
+	} 	
 
 }
 ?>

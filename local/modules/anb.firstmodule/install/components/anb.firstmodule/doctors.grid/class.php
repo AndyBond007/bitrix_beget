@@ -48,9 +48,9 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
     {
         return [
             [
-                'onclick' => "window.open('http://anb:doctors.grid-08.localhost/bitrix/admin/perfmon_row_edit.php?lang=ru&table_name=aholin_book&pk%5BID%5D={$fields['ID']}')", // метод обработчик в js
+                'onclick' => "window.open('{$SITE_DIR}/doctors/{$fields['TITLE']}')", // метод обработчик в js
                 'text' => Loc::getMessage('DOCTORS_GRID_OPEN_DOCTOR', [
-                    '#DOCTOR_NAME#' => $fields['TITLE'],
+                    '#DOCTOR_NAME#' => $fields['SURNAME'],
                 ]),
                 'default' => true,
             ],
@@ -179,11 +179,6 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
         $this->includeComponentTemplate();
     }
 
-    /**
-     * @throws \Bitrix\Main\ObjectPropertyException
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\SystemException
-     */
     private function prepareGridData(): void
     {
         $this->arResult['HEADERS'] = $this->getHeaders();
@@ -234,6 +229,7 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
                 'filter' => ['IBLOCK_ELEMENT_ID' => $doctorIds] + $filter,
                 'select' => [
                     'IBLOCK_ELEMENT_ID',
+                    'TITLE' => 'ELEMENT.NAME',
                     'SURNAME',
                     'FIRSTNAME',
                     'MIDNAME',
@@ -307,6 +303,7 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
             if (!isset($groupedBooks[$doctorId])) {
                 $groupedBooks[$doctorId] = [
                     'IBLOCK_ELEMENT_ID' => $book['IBLOCK_ELEMENT_ID'],
+                    'TITLE' => $book['TITLE'],
                     'SURNAME' => $book['SURNAME'],
                     'FIRSTNAME' => $book['FIRSTNAME'],
                     'MIDNAME' => $book['MIDNAME'],
@@ -331,6 +328,7 @@ class BookGrid extends \CBitrixComponent implements Controllerable, Errorable
             $gridList[] = [
                 'data' => [
                     'IBLOCK_ELEMENT_ID' => $book['IBLOCK_ELEMENT_ID'],
+                    'TITLE' => $book['TITLE'],
                     'SURNAME' => $book['SURNAME'],
                     'FIRSTNAME' => $book['FIRSTNAME'],
                     'MIDNAME' => $book['MIDNAME'],                    

@@ -8,19 +8,15 @@ use Bitrix\Main\UI\Extension;
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
     die();
 
-/**
- * @var array $arResult
- * @var array $arParams
- * @global $APPLICATION
- * @global $component
- */
-
+//Подгружаем модуль
 Loader::includeModule('ui');
-// Extension::load(['anb:doctors.grid.modal.dialog', 'date']);
+
+//Добавляем требуемые кнопки
 foreach ($arResult['BUTTONS'] as $button) {
     Toolbar::addButton($button);
 }
 
+//Добавляем фильтр
 Toolbar::addFilter([
     'FILTER_ID' => $arResult['FILTER_ID'],
     'GRID_ID' => $arResult['FILTER_ID'],
@@ -29,7 +25,11 @@ Toolbar::addFilter([
     'ENABLE_LIVE_SEARCH' => true,
     'ENABLE_LABEL' => true
 ]);
+?>
 
+<div>В этой части могут быть другие компоненты и элементы для отображения</div>
+
+<?php
 $APPLICATION->IncludeComponent(
     'bitrix:main.ui.grid',
     '',
@@ -39,18 +39,22 @@ $APPLICATION->IncludeComponent(
          * можно сделать связь грида и фильтра
         */
         'GRID_ID' => $arResult['FILTER_ID'],
+
         /**
          * Массив заголовков таблицы
          */
         'HEADERS' => $arResult['HEADERS'],
+
         /**
          * записи
          */
         'ROWS' => $arResult['GRID_LIST'],
+
         /**
          * Сколько всего есть записей
          */
         'TOTAL_ROWS_COUNT' => $arResult['NAV']->getRecordCount(),
+
         'NAV_OBJECT' => $arResult['NAV'],
         'AJAX_MODE' => 'Y',
         'AJAX_LOADER' => $arParams['AJAX_LOADER'],
@@ -60,6 +64,7 @@ $APPLICATION->IncludeComponent(
         'ALLOW_HORIZONTAL_SCROLL' => true,
         'ALLOW_SORT' => true,
         'ALLOW_PIN_HEADER' => true,
+
         /**
          * Описытаельный массив групповых действий
          */
@@ -78,7 +83,11 @@ $APPLICATION->IncludeComponent(
         'ALLOW_SAVE_ROWS_STATE' => true,
         'SHOW_MORE_BUTTON' => false,
         'CURRENT_PAGE' => '',
+        
+        //Количество элементов для отображения по умолчанию
         'DEFAULT_PAGE_SIZE' => 20,
+
+        //Количество элементов для отображения
         'PAGE_SIZES' => [
             ['NAME' => 1, 'VALUE' => 1],
             ['NAME' => 5, 'VALUE' => 5],
@@ -89,10 +98,9 @@ $APPLICATION->IncludeComponent(
     ],
     $component,
 );?>
-<div class="add-book-form-container"></div>
+<div class="add-doctors-form-container"></div>
 <script>
     function redirectToExcel() {
-        // если гет параметров нет то добавляй новый
         window.open(window.location.href + '&EXPORT_MODE=Y', '_self');
     }
 </script>
