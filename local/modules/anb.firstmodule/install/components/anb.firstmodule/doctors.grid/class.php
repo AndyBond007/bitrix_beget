@@ -200,16 +200,16 @@ class DoctorsGrid extends \CBitrixComponent implements Controllerable, Errorable
                 'text' => Loc::getMessage( 'DOCTORS_GRID_GO_TO_LIVE_STREAM' ),
                 'color' => Color::SECONDARY,
             ],
-            [
-                'click' => 'BX.Anb.DoctorsGrid.addBook',
-                'text' => Loc::getMessage( 'DOCTORS_GRID_ADD_ELEMENT' ),
-                'color' => Color::PRIMARY_DARK,
-            ],
-            [
-                'click' => 'BX.Anb.DoctorsGrid.createTestElementViaModule',
-                'text' => Loc::getMessage( 'DOCTORS_GRID_ADD_TEST_ELEMENT' ),
-                'color' => Color::DANGER_DARK,
-            ],
+            // [
+            //     'click' => 'BX.Anb.DoctorsGrid.addBook',
+            //     'text' => Loc::getMessage( 'DOCTORS_GRID_ADD_ELEMENT' ),
+            //     'color' => Color::PRIMARY_DARK,
+            // ],
+            // [
+            //     'click' => 'BX.Anb.DoctorsGrid.createTestElementViaModule',
+            //     'text' => Loc::getMessage( 'DOCTORS_GRID_ADD_TEST_ELEMENT' ),
+            //     'color' => Color::DANGER_DARK,
+            // ],
         ];
     }
 
