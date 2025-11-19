@@ -116,39 +116,15 @@ if ($action == 'new' || $action == 'edit') {
             CIBlockElement::SetPropertyValues($ID, DoctorsTable::IBLOCK_ID, $procs, 'PROCEDURES');
 
             if ( $_FILES && $_FILES["file"]["error"] === UPLOAD_ERR_OK ) {
-                print_r($_FILES);
-                print "<P>\n";
-                //Формируем имя файла для загрузки в папку upload/doctors
-                $file_name = $_SERVER['DOCUMENT_ROOT'] . "/upload/doctors/" . $_FILES['file']['name'];
+                $iblockId = DoctorsTable::IBLOCK_ID;
+                if( !CModule::IncludeModule( 'iblock' ) ) die( 'error' );
+                $entity = Bitrix\Iblock\Iblock::wakeUp( $iblockId )->getEntityDataClass();
 
-                move_uploaded_file ($_FILES['file']['tmp_name'], $file_name );
+                $filePath = $_FILES['file']['tmp_name'];
+                $arFile = CFile::MakeFileArray($filePath);
+                $fileId = CFile::SaveFile( $arFile, "tmp/example", false, false, "", true );
 
-                //Готовим массив данных файла
-                $ar_file = CFile::MakeFileArray( $file_name);
-                //Новая папка для проверки работоспособности метода
-                //Но в эту папку файл не сохраняет
-                $file_name1 = $_SERVER['DOCUMENT_ROOT'] . "/upload/doctors_ext/" . $_FILES['file']['name'];
-                $file_ID = CFile::SaveFile($ar_file, $file_name, false, false, "", true ); // вызываем метод для сохранения файла на сервере    
-                var_dump( $file_ID);
-                if ($file_ID > 0) {
-                    echo "Файл успешно загружен! ID файла: " . $file_ID;
-
-                    $iblock = Iblock::wakeUp(17);
-                    $res = \Bitrix\Iblock\Elements\ElementDoctorsTable::update(41, array(
-                        'DETAIL_PICTURE_TEXT' => "CFile::GetByID(271)",
-                    ));
-                    // $arLoad = Array(
-                    //     'IBLOCK_ELEMENT_ID' => $ID,
-                    //     //'FIRSTNAME' => "Имя менется успешно",   ///Это для проверки того, что изменения идут в БД
-                    //     // 'DETAIL_TEXT' => $file_ID,
-                    //     // хотя на самом деле можно и так указать
-                    //     'DETAIL_PICTURE' => CFile::MakeFileArray( $file_name ),
-                    // );
-
-                    // if (!DoctorsTable::update($_POST['ID'], $arLoad) ){  // ошибка при сохранении 
-                    //     'Произошла ошибка обновления картинки';
-                    // }
-                }
+                $entity::update( $ID, [ "DETAIL_PICTURE" => $fileId ] );
             }
 
 
