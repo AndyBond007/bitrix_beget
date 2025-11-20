@@ -1,0 +1,7 @@
+.doctor-booking-button {
+    margin-left: 25px;
+}
+#doctor-booking-popup textarea {
+    width: 100%;
+    min-height: 100px;
+}

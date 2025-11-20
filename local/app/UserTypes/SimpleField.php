@@ -2,6 +2,8 @@
 
 namespace UserTypes;
 
+use BX\DoctorBooking;
+
 class SimpleField
 {
     public static function GetUserTypeDescription()
@@ -33,6 +35,7 @@ class SimpleField
 
     public static function GetPublicViewHTML($arProperty, $arValue, $strHTMLControlName)
     {
+        
         $arSettings = self::PrepareSettings($arProperty);
         //$arProperty["LINK_IBLOCK_ID"] ссылка на текущий  связаный инфоблок
         //$arProperty['IBLOCK_ID'] ссылка на инфоблонк, к кторому привязано свойство
@@ -51,7 +54,15 @@ class SimpleField
         
         
 
-        $strResult = '<a href="http://192.168.198.130/services/lists/' . $arProperty["LINK_IBLOCK_ID"] . '/element/0/'. $arVals[$arValue['VALUE']] . '/?list_section_id=">' . $arVals[$arValue['VALUE']] . '</a>';
+        // BX.Anb.DoctorsGrid.addBook
+        // <a href="#" onclick="doSomethingCool(event);">Кликни здесь!</a>
+        // $strResult = "<script>BX.ready(function () { BX.DoctorBooking.helloWorld(); });</script>";
+
+        // sprintf('BX.Otus.BookGrid.deleteBook(%d)', $fields['ID']),
+
+        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(".$arVals[$arValue['VALUE']]."); });'>" . $arVals[$arValue['VALUE']] . '</a>';
+        
+        // $strResult = '<a href="http://192.168.198.130/services/lists/' . $arProperty["LINK_IBLOCK_ID"] . '/element/0/'. $arVals[$arValue['VALUE']] . '/?list_section_id=">' . $arVals[$arValue['VALUE']] . '</a>';
         return $strResult;
     }
 
