@@ -97,7 +97,39 @@ var popupFields =  BX.create( {
                         children: [ 
                             BX.create( {
                                 tag: 'input', 
-                                attrs: { id: 'patientDate', type: 'datetime-local', name: 'patientDate' } 
+                                attrs: { id: 'patientDate', type: 'datetime-local', name: 'patientDate' },
+                                events: {
+                                    change: function (){
+                                        //Определяем текущее время
+                                        currentTime = new Date();
+                                        if  ( new Date(this.value) < currentTime ) {
+                                            BX.adjust(BX(this),{
+                                                props:{className: "form-control invalid"}
+                                            });
+                                            return false;
+                                        } else {
+                                            BX.adjust(BX(this),{
+                                                props:{className: "form-control"}
+                                            });
+                                            return true;
+                                        }
+                                    },
+                                    input: function (){
+                                        //Определяем текущее время
+                                        currentTime = new Date().value;
+                                        if  ( new Date(this.value) < currentTime ) {
+                                            BX.adjust(BX(this),{
+                                                props:{className: "form-control invalid"}
+                                            });
+                                            return false;
+                                        } else {
+                                            BX.adjust(BX(this),{
+                                                props:{className: "form-control"}
+                                            });
+                                            return true;
+                                        }
+                                    }
+                                }
                             } ),
                         ]
                     } ),    
@@ -141,14 +173,19 @@ DoctorBooking.showPopup = function( item ) {
                 events : { //Событие по кнопке
                     click : function () {
                         BX.fireEvent(BX('patientName'),'change');
-						// BX.fireEvent(BX('reviewText'),'change');
+						BX.fireEvent(BX('patientDate'),'change');
 
-                        const getVal = document.getElementById("patientName");   
-                        if ( ( getVal.value.length<=3 ) || !/[а-яА-ЯЁё]/.test(getVal.value) ) { 
+                        const getValName = document.getElementById("patientName"); 
+                        const getValDate = document.getElementById("patientDate"); 
+
+                        const currentTime = new Date(); 
+                        const valDate = new Date( getValDate.value ) 
+                        if ( ( getValName.value.length<=3 ) || ( !/[а-яА-ЯЁё]/.test(getValName.value) ) || 
+                             ( valDate < currentTime ) ) { 
                             return false;
                         }
                         else {
-                            DoctorBooking.helloWorld(getVal.value); //Вызов метода
+                            DoctorBooking.helloWorld(getValName.value); //Вызов метода
                             this.popupWindow.close();
                         }
                         
@@ -166,6 +203,18 @@ DoctorBooking.showPopup = function( item ) {
             } ) 
         ]
     } );
+    
+    //Сбрасываем имя
+     const getValName = document.getElementById("patientName"); 
+     getValName.value = "";   
+    //Определяем текущее время
+    const currentTime = new Date();
+    
+    //Костыль для перевода в текущую локаль.
+    //Как сделать правильно?
+    currentTime.setHours( currentTime.getHours() + 5 );
+    document.getElementById('patientDate').value = currentTime.toISOString().slice(0, 16);
+
     // выводим окно
     DoctorBooking.popup.show();
 };
