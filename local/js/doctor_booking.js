@@ -5,13 +5,17 @@ DoctorBooking.helloWorld = function( text ) {
   alert(tt);
 };
 
-var popupFields =  BX.create( {
+var popupFields =  
+// BX.create( 
+{
     tag: 'div', 
     props: {
             width: '100%',
             id: 'doctorBookingForm',                
     },
+
     children: [ 
+        BX.message( 'DOCTOR_BOOKING_POPUP_SUBTITLE' ),
         BX.create("table", {
             props: {
                 width: '100%',
@@ -138,13 +142,14 @@ var popupFields =  BX.create( {
             ]
         }),
     ]
-} );
+} ;
+// );
 
 
 
 
 // вызов модального окна
-DoctorBooking.showPopup = function( item ) {
+DoctorBooking.showPopup = function( doctorName, procName ) {
     // если окно уже существует, закрываем и убиваем окно
     if ( DoctorBooking.popup ) {
         DoctorBooking.popup.close();
@@ -162,9 +167,13 @@ DoctorBooking.showPopup = function( item ) {
             backgroundColor : '#000000ff' //Цвет перекрытия
         },
         titleBar : BX.message( 'DOCTOR_BOOKING_POPUP_TITLE' ),
-        content : popupFields, //BX.create('div', {
-        //     html : '<p>' + BX.message( 'DOCTOR_BOOKING_POPUP_SUBTITLE' ) + '</p><textarea>' + item + '</textarea>' 
-        // } ),
+        content : BX.create( {
+            tag: 'div', 
+            children: [ 
+                BX.create( "div", { html: '<div>Для записи к доктору: <b>'+doctorName+'</b></br>на процедуру: <b>' + procName + '</b></br></br></div>'}),
+                BX.create( "div", popupFields)
+            ]
+        } ),
 
         buttons : [ //Создаем кнопки на окне
             new BX.PopupWindowButton( { //Кнопка добавления

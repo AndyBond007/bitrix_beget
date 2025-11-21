@@ -96,10 +96,10 @@ class SimpleField
 
             $ii=$ii+1;
         }
-
-
-
-        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(".$arVals_ID[$arValue['VALUE']]."); });'>" . $arVals[$arValue['VALUE']] . '</a>';
+        
+        $doctorName = 'Иванов Иван Иванович';
+        $procName = 'Диагностика';
+        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(\"{$doctorName}\",\"{$procName}\"); });'>" . $arVals[$arValue['VALUE']] . '</a>';
         return $strResult;
     }
 
