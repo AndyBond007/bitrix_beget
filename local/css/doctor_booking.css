@@ -1,7 +1,17 @@
-.doctor-booking-button {
-    margin-left: 25px;
+
+.doctor-booking-add-form {
+    display:flex;
+    flex-direction:row;
 }
-#doctor-booking-popup textarea {
+.doctor-booking-add-form>* {
+    margin:12px;
     width: 100%;
-    min-height: 100px;
+    padding:6px;
+    border-radius: 6px;
+    border-width: 1px;
+    font-size:16px;
+}
+
+.invalid {
+  box-shadow: 0 0 5px 1px red;
 }
