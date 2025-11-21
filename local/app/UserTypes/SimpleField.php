@@ -93,13 +93,21 @@ class SimpleField
         $ii=0;
          foreach ($arProperty['VALUE'] as $i => $value) {
             $arVals[$value] = $temp[$ii];
-
             $ii=$ii+1;
         }
         
-        $doctorName = 'Иванов Иван Иванович';
-        $procName = 'Диагностика';
-        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(\"{$doctorName}\",\"{$procName}\"); });'>" . $arVals[$arValue['VALUE']] . '</a>';
+        $doctor = DoctorsTable::query()
+        ->setSelect([
+            'SURNAME',
+            'FIRSTNAME',
+            'MIDNAME',
+        ])
+        ->where('ELEMENT.ID', $arProperty['ELEMENT_ID'])
+        ->fetch();
+        
+
+        $doctorName = $doctor['SURNAME'].' '.$doctor['FIRSTNAME'].' '.$doctor['MIDNAME'];
+        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(\"{$doctorName}\",\"{$arVals[$arValue['VALUE']]}\"); });'>" . $arVals[$arValue['VALUE']] . '</a>';
         return $strResult;
     }
 
