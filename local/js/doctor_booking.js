@@ -194,6 +194,18 @@ DoctorBooking.showPopup = function( doctorName, procName ) {
                             return false;
                         }
                         else {
+                                
+                            var request = BX.ajax.runAction('anb:firstmodule.controller.test.example', {
+                                data: {
+                                    param1: 'hhh'
+                                }
+                            });
+                            
+                            request.then(function(response){
+                                alert(response);
+                                console.log(response);
+                            });
+
                             DoctorBooking.helloWorld(getValName.value); //Вызов метода
                             this.popupWindow.close();
                         }
