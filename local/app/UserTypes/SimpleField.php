@@ -3,6 +3,8 @@
 namespace UserTypes;
 
 use BX\DoctorBooking;
+use Models\Lists\DoctorsPropertyValuesTable as DoctorsTable;
+use Models\Lists\ProceduresPropertyValuesTable as ProceduresTable;
 
 class SimpleField
 {
@@ -33,9 +35,42 @@ class SimpleField
     }
 
 
+    public static function GetList($procedures)
+    {
+        $rsEnum = [];
+     
+        $procs = ProceduresTable::query()
+            ->setSelect( [ "ID" => "ELEMENT.ID", 'NAME' => 'ELEMENT.NAME' ] )
+            ->where( "ELEMENT.ID", "in", $procedures )
+            ->fetchAll();
+        $simpleData = [];
+        foreach( $procs as $row )
+        {
+            $simpleData[] = $row[ 'NAME' ];
+        }
+
+        //GROUPS_ID - Администраторы, контент редакторы
+        // $dbResultList = Procedures::getList([
+        //         'select' => [
+        //             'IBLOCK_ELEMENT_ID',
+        //             'TITLE' => 'ELEMENT.NAME',
+        //         ],
+        //         'where' => ['']
+        //     ])->Fetch();
+        // while ($arResult = $dbResultList->Fetch()){
+        //     $rsEnum[] = [
+        //         'ID' => $arResult['ID'],
+        //         //Формат отображения значений
+        //         'VALUE' => $arResult['NAME'] . ' ' . $arResult['LAST_NAME'] . ' (' . $arResult['EMAIL'] . ')'
+        //     ];
+        // }
+
+        return $simpleData;
+    }
+
     public static function GetPublicViewHTML($arProperty, $arValue, $strHTMLControlName)
     {
-        
+
         $arSettings = self::PrepareSettings($arProperty);
         //$arProperty["LINK_IBLOCK_ID"] ссылка на текущий  связаный инфоблок
         //$arProperty['IBLOCK_ID'] ссылка на инфоблонк, к кторому привязано свойство
@@ -44,25 +79,27 @@ class SimpleField
         
 
         //Формирование ссылки в виде номера
+        //Тут мне кажется совсем не идеальный вариант
         $arVals = array();
+        $arVals_ID = array();
         if (!is_array($arProperty['VALUE'])) {
             $arProperty['VALUE'] = array($arProperty['VALUE']);
         }
         foreach ($arProperty['VALUE'] as $i => $value) {
-            $arVals[$value] = unserialize($arProperty['VALUE'][$i]);
+            $arVals_ID[$value] = unserialize($arProperty['VALUE'][$i]);
         }
-        
-        
+        $temp = self::GetList($arVals_ID);
+ 
+        $ii=0;
+         foreach ($arProperty['VALUE'] as $i => $value) {
+            $arVals[$value] = $temp[$ii];
 
-        // BX.Anb.DoctorsGrid.addBook
-        // <a href="#" onclick="doSomethingCool(event);">Кликни здесь!</a>
-        // $strResult = "<script>BX.ready(function () { BX.DoctorBooking.helloWorld(); });</script>";
+            $ii=$ii+1;
+        }
 
-        // sprintf('BX.Otus.BookGrid.deleteBook(%d)', $fields['ID']),
 
-        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(".$arVals[$arValue['VALUE']]."); });'>" . $arVals[$arValue['VALUE']] . '</a>';
-        
-        // $strResult = '<a href="http://192.168.198.130/services/lists/' . $arProperty["LINK_IBLOCK_ID"] . '/element/0/'. $arVals[$arValue['VALUE']] . '/?list_section_id=">' . $arVals[$arValue['VALUE']] . '</a>';
+
+        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(".$arVals_ID[$arValue['VALUE']]."); });'>" . $arVals[$arValue['VALUE']] . '</a>';
         return $strResult;
     }
 
