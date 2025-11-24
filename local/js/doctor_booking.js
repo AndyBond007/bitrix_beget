@@ -5,6 +5,32 @@ DoctorBooking.helloWorld = function( text ) {
   alert(tt);
 };
 
+
+DoctorBooking.showMessage = function (message) {
+        alert(message);
+    };
+
+DoctorBooking.addBookingRecord = function(doc_Id, proc_Id, name_, date_time ) {
+        BX.ajax.runComponentAction('anb:booking', 'addBookingRecord', {
+            mode: 'ajax',
+            data: {
+                docId: doc_Id,
+                procId: proc_Id,
+                name: name_,
+                datetime: date_time,
+            },
+        }).then(response => {
+            DoctorBooking.showMessage('Вы успешно записаны' );//response.data.BOOKING_ID);
+        }, reject => {
+            let errorMessage = '';
+            for (let error of reject.errors) {
+                errorMessage += error.message + '\n';
+            }
+            DoctorBooking.showMessage(errorMessage);
+        });
+}
+
+
 var popupFields =  
 // BX.create( 
 {
@@ -149,7 +175,7 @@ var popupFields =
 
 
 // вызов модального окна
-DoctorBooking.showPopup = function( doctorName, procName ) {
+DoctorBooking.showPopup = function( doctorName, docId, procName, procId ) {
     // если окно уже существует, закрываем и убиваем окно
     if ( DoctorBooking.popup ) {
         DoctorBooking.popup.close();
@@ -195,18 +221,19 @@ DoctorBooking.showPopup = function( doctorName, procName ) {
                         }
                         else {
                                 
-                            var request = BX.ajax.runAction('anb:firstmodule.controller.test.example', {
-                                data: {
-                                    param1: 'hhh'
-                                }
-                            });
+                            // var request = BX.ajax.runAction('anb:firstmodule.controller.test.example', {
+                            //     data: {
+                            //         param1: 'hhh'
+                            //     }
+                            // });
                             
-                            request.then(function(response){
-                                alert(response);
-                                console.log(response);
-                            });
+                            // request.then(function(response){
+                            //     alert(response);
+                            //     console.log(response);
+                            // });
 
-                            DoctorBooking.helloWorld(getValName.value); //Вызов метода
+                            DoctorBooking.addBookingRecord(docId, procId, getValName.value, getValDate.value );
+                            // DoctorBooking.helloWorld(getValName.value); //Вызов метода
                             this.popupWindow.close();
                         }
                         

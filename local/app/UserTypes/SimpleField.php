@@ -107,7 +107,7 @@ class SimpleField
         
 
         $doctorName = $doctor['SURNAME'].' '.$doctor['FIRSTNAME'].' '.$doctor['MIDNAME'];
-        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(\"{$doctorName}\",\"{$arVals[$arValue['VALUE']]}\"); });'>" . $arVals[$arValue['VALUE']] . '</a>';
+        $strResult ="<a href='#' onclick='BX.ready(function () { BX.DoctorBooking.showPopup(\"{$doctorName}\", {$arProperty['ELEMENT_ID']}, \"{$arVals[$arValue['VALUE']]}\", {$arVals_ID[$arValue['VALUE']]}); });'>" . $arVals[$arValue['VALUE']] . '</a>';
         return $strResult;
     }
 
