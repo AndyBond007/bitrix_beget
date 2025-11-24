@@ -522,9 +522,9 @@ $arMenuB24[] = [
 	Loc::getMessage('TOP_MENU_COMPANY'),
 	SITE_DIR . 'company/',
 	[
-		'/timeman/',
-		'/kb/',
-		'/conference/',
+		SITE_DIR . 'timeman/',
+		SITE_DIR . 'kb/',
+		SITE_DIR . 'conference/',
 	],
 	[
 		'real_link' => getLeftMenuItemLink(
@@ -627,12 +627,12 @@ else
 }
 $arMenuB24[] = array(
 	$itemLabel,
-	SITE_DIR.Marketplace::getBoxMainDirectory(),
-	array(SITE_DIR.Marketplace::getBoxMainDirectory()),
+	Marketplace::getBoxMainDirectory(),
+	array(Marketplace::getBoxMainDirectory()),
 	array(
 		"real_link" => getLeftMenuItemLink(
 			"top_menu_id_marketplace",
-			SITE_DIR.Marketplace::getBoxMainDirectory()
+			Marketplace::getMainDirectory()
 		),
 		"menu_item_id"=>"menu_marketplace_sect",
 		"top_menu_id" => "top_menu_id_marketplace"

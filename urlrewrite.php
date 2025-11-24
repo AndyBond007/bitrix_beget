@@ -411,9 +411,9 @@ $arUrlRewrite=array (
   152 => 
   array (
     'CONDITION' => '#^/task/comments/([0-9]+)#',
-    'RULE' => 'action=tasks.V2.LegacyComment.get&taskId=$1',
+    'RULE' => 'taskId=$1',
     'ID' => NULL,
-    'PATH' => '/bitrix/services/main/ajax.php',
+    'PATH' => '/tasks/comments.php',
     'SORT' => 100,
   ),
   2 => 
@@ -1086,6 +1086,14 @@ $arUrlRewrite=array (
     'RULE' => '',
     'ID' => 'bitrix:crm.deal',
     'PATH' => '/crm/deal/index.php',
+    'SORT' => 100,
+  ),
+  153 => 
+  array (
+    'CONDITION' => '#^vibe/edit/#',
+    'RULE' => '',
+    'ID' => 'bitrix:landing.start',
+    'PATH' => 'vibe/edit/index.php',
     'SORT' => 100,
   ),
   78 => 

@@ -32,6 +32,7 @@ abstract class AbstractIblockPropertyValuesTable extends DataManager
     protected static ?array $properties = null;
     protected static ?CIBlockElement $iblockElement = null;
 
+
     /**
      * @return string
      */

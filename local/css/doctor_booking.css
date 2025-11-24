@@ -1,0 +1,17 @@
+
+.doctor-booking-add-form {
+    display:flex;
+    flex-direction:row;
+}
+.doctor-booking-add-form>* {
+    margin:12px;
+    width: 100%;
+    padding:6px;
+    border-radius: 6px;
+    border-width: 1px;
+    font-size:16px;
+}
+
+.invalid {
+  box-shadow: 0 0 5px 1px red;
+}
