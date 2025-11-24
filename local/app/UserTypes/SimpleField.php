@@ -46,7 +46,8 @@ class SimpleField
         $simpleData = [];
         foreach( $procs as $row )
         {
-            $simpleData[] = $row[ 'NAME' ];
+            $simpleData['VALUE'][] = $row[ 'NAME' ];
+            $simpleData['ID'][] = $row[ 'ID' ];
         }
 
         //GROUPS_ID - Администраторы, контент редакторы
@@ -89,10 +90,13 @@ class SimpleField
             $arVals_ID[$value] = unserialize($arProperty['VALUE'][$i]);
         }
         $temp = self::GetList($arVals_ID);
- 
+
+
         $ii=0;
          foreach ($arProperty['VALUE'] as $i => $value) {
-            $arVals[$value] = $temp[$ii];
+            $arVals[$value] = $temp['VALUE'][$ii];
+            $arVals_ID[$value] = $temp['ID'][$ii];
+            
             $ii=$ii+1;
         }
         
