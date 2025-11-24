@@ -171,7 +171,21 @@ var popupFields =
 } ;
 // );
 
-
+DoctorBooking.toISOLocal=function(d) {
+  var z  = n =>  ('0' + n).slice(-2);
+  var zz = n => ('00' + n).slice(-3);
+  var off = d.getTimezoneOffset();
+  var sign = off > 0? '-' : '+';
+  off = Math.abs(off);
+  return d.getFullYear() + '-'
+         + z(d.getMonth()+1) + '-' +
+         z(d.getDate()) + 'T' +
+         z(d.getHours()) + ':'  +
+         z(d.getMinutes()) + ':' +
+         z(d.getSeconds()) + '.' +
+         zz(d.getMilliseconds()) +
+         sign + z(off/60|0) + ':' + z(off%60);
+}
 
 
 // вызов модального окна
@@ -260,8 +274,8 @@ DoctorBooking.showPopup = function( doctorName, docId, procName, procId ) {
     
     //Костыль для перевода в текущую локаль.
     //Как сделать правильно?
-    currentTime.setHours( currentTime.getHours() + 5 );
-    document.getElementById('patientDate').value = currentTime.toISOString().slice(0, 16);
+    currentTime.setHours( currentTime.getHours() + 1 );
+    document.getElementById('patientDate').value = DoctorBooking.toISOLocal(currentTime).slice(0,16);
 
     // выводим окно
     DoctorBooking.popup.show();

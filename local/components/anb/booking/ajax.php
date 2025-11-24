@@ -23,12 +23,12 @@ class BookingAjaxController extends \Bitrix\Main\Engine\Controller
         try {
             CModule::IncludeModule("iblock");
 
-
+            $userTimezone = 'Europe/Moscow';
             $addResult = BookingData::add([
                 'NAME' => $name,
                 'DOCTOR' => $docId,
                 'PROCEDURE' => $procId,
-                'DATETIME' => new DateTime($datetime, "Y-m-d H:i"),
+                'DATETIME' => new DateTime($datetime, "Y-m-d H:i", new DateTimeZone($userTimezone)),
             ]);
             
             if ( $addResult ) {
