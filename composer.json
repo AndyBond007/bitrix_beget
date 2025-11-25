@@ -1,6 +1,7 @@
 {
     "require": {
         "symfony/var-dumper": "^7.3",
-        "phpoffice/phpspreadsheet": "^5.2"
+        "phpoffice/phpspreadsheet": "^5.2",
+        "hflabs/dadata": "^24.4"
     }
 }
