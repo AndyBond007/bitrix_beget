@@ -8,12 +8,27 @@ use Classes\Dadata as Dadata;
  */
 $APPLICATION->SetTitle('Использование Dadata');
 
-$token = "be15db6e663bd80461fc9f8211a6a4b60c9210fa"; // ваш api ключ
-$secret = "8be69a41ba37a0cf67c797b3fc971c1bd35cadbe"; // ваш секретный ключ
+$token = "be15db6e663bd80461fc9f8211a6a4b60c9210fa"; // API ключ Dadata
+$secret = "8be69a41ba37a0cf67c797b3fc971c1bd35cadbe"; // Cекретный ключ Dadata
 $dadata = new \Dadata\DadataClient($token, $secret);
 
-$response = $dadata->findById("party", "7707083893");
-var_dump($response[0]['value']);
+//Форпост
+// $test_inn = "7743183734";
+//СВК
+$test_inn = "7717629042";
+//Сбербанк
+// $test_inn = "7707083893";
+$response = $dadata->findById("party", $test_inn);
+// var_dump($response[0]['data']);
+var_dump($response[0]['data']['name']['short_with_opf']);
+var_dump($response[0]['data']['name']['full_with_opf']);
+var_dump($response[0]['data']['address']['value']);
+var_dump($response[0]['data']['kpp']);
+var_dump($response[0]['data']['inn']);
+var_dump($response[0]['data']['ogrn']);
+var_dump($response[0]['data']['okpo']);
+var_dump($response[0]['phones'][0]);
+var_dump($response[0]['emails'][0]);
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/footer.php';
 ?>
