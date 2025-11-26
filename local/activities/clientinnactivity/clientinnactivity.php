@@ -104,127 +104,153 @@ class CBPClientINNActivity extends BaseActivity
             $this->preparedProperties[ 'Phone' ] = $company_phone;
             $this->preparedProperties[ 'Email' ] = $company_email;
 
-            $respomsible = 1;   //Указываем от кого производится добавление
-
-            //Важно - Нет проверки на случай, если обнаружена компания в списке компаний битрикса
-            //Готовим массив данных по компании для добавления
-            $new_company = array(
-                'TITLE' => $this->preparedProperties[ 'Company' ],
-                'OPENED' => 'Y',
-                'COMPANY_TYPE' => 'CUSTOMER',
-                'ASSIGNED_BY_ID' => $respomsible,
+            //Проверяем, есть ли компания с таким название в списке
+            $entityResult = \CCrmCompany::GetListEx(
+                [],
+                [
+                    'TITLE' => $company_name,  
+                    'CHECK_PERMISSIONS' => 'N'
+                ],
+                false,
+                false,
+                [
+                    'ID',
+                    'TITLE'
+                ]
             );
-            //Если указан телефон - добавляем
-            if ( $this->preparedProperties[ 'Phone' ] )
-                $new_company['FM']['PHONE'] = array (
-                    'n0' => array(
-                        'VALUE_TYPE' => 'WORK',
-                        'VALUE' => $this->preparedProperties[ 'Phone' ],
-                    )
+
+            //Проверка компании с именем
+            $company_cnt = 0;
+            while( $entity = $entityResult->fetch() )
+            {
+                $company_cnt++;
+            }
+
+            if ( !$company_cnt ) {
+
+                $respomsible = 1;   //Указываем от кого производится добавление
+
+                
+                //Готовим массив данных по компании для добавления
+                $new_company = array(
+                    'TITLE' => $this->preparedProperties[ 'Company' ],
+                    'OPENED' => 'Y',
+                    'COMPANY_TYPE' => 'CUSTOMER',
+                    'ASSIGNED_BY_ID' => $respomsible,
                 );
-            //Если указана электронная почта - добавляем
-            if ( $this->preparedProperties[ 'Email' ] )
-                $new_company['FM']['EMAIL'] = array (
-                    'n0' => array(
-                        'VALUE_TYPE' => 'WORK',
-                        'VALUE' => $this->preparedProperties[ 'Email' ],
-                    )
-                );                
-            
-            //Обращаемся к CRM Company
-            $company = new CCrmCompany( false ); //false - провеврка прав доступа к компаниям
-            //Добавляем компанию и получаем ее ID
-            $company_id = $company->Add( $new_company ); 
+                //Если указан телефон - добавляем
+                if ( $this->preparedProperties[ 'Phone' ] )
+                    $new_company['FM']['PHONE'] = array (
+                        'n0' => array(
+                            'VALUE_TYPE' => 'WORK',
+                            'VALUE' => $this->preparedProperties[ 'Phone' ],
+                        )
+                    );
+                //Если указана электронная почта - добавляем
+                if ( $this->preparedProperties[ 'Email' ] )
+                    $new_company['FM']['EMAIL'] = array (
+                        'n0' => array(
+                            'VALUE_TYPE' => 'WORK',
+                            'VALUE' => $this->preparedProperties[ 'Email' ],
+                        )
+                    );                
+                
+                //Обращаемся к CRM Company
+                $company = new CCrmCompany( false ); //false - провеврка прав доступа к компаниям
+                //Добавляем компанию и получаем ее ID
+                $company_id = $company->Add( $new_company ); 
 
-            //Если компания успешно добавлена
-            if ( $company_id ) {
-                //Выводим в журнал информацию
-                $this->log( 'Обновлена информация о компании: ' 
-                    . 'ID '. $company_id
-                    . ', ' . $this->preparedProperties[ 'Company' ]
-                    . ', ' . $this->preparedProperties[ 'FullCompany' ] 
-                    . ', Адрес: ' . $this->preparedProperties[ 'Address' ] 
-                    . ', Телефон: ' . $this->preparedProperties[ 'Phone' ] 
-                    . ', E-mail: ' . $this->preparedProperties[ 'Email' ] 
-                );
+                //Если компания успешно добавлена
+                if ( $company_id ) {
+                    //Выводим в журнал информацию
+                    $this->log( 'Обновлена информация о компании: ' 
+                        . 'ID '. $company_id
+                        . ', ' . $this->preparedProperties[ 'Company' ]
+                        . ', ' . $this->preparedProperties[ 'FullCompany' ] 
+                        . ', Адрес: ' . $this->preparedProperties[ 'Address' ] 
+                        . ', Телефон: ' . $this->preparedProperties[ 'Phone' ] 
+                        . ', E-mail: ' . $this->preparedProperties[ 'Email' ] 
+                    );
 
-                //Добавляем реквизиты
-                //Создаем объект реквизитов
-                $requisite = new \Bitrix\Crm\EntityRequisite();
-                //Получаем списко реквизитов компании
-                $rs = $requisite->getList( [
-                    "filter" => ["ENTITY_ID" => $company_id, "ENTITY_TYPE_ID" => CCrmOwnerType::Company ]
-                ] );
+                    //Добавляем реквизиты
+                    //Создаем объект реквизитов
+                    $requisite = new \Bitrix\Crm\EntityRequisite();
+                    //Получаем списко реквизитов компании
+                    $rs = $requisite->getList( [
+                        "filter" => ["ENTITY_ID" => $company_id, "ENTITY_TYPE_ID" => CCrmOwnerType::Company ]
+                    ] );
 
-                $reqData = $rs->fetchAll();
+                    $reqData = $rs->fetchAll();
 
-                // Подготовка полей
-                $fields = array(
-                    'ENTITY_ID' => $company_id,
-                    'ENTITY_TYPE_ID' => \CCrmOwnerType::Company,
-                    'PRESET_ID' => 1, // 1-Организация, 3-ИП, 5-Физлицо
-                    'NAME' => $this->preparedProperties[ 'Company' ],
-                    'SORT' => 500,
-                    'ACTIVE' => 'Y',
-                    'RQ_COMPANY_NAME' => $this->preparedProperties[ 'Company' ],
-                    'RQ_COMPANY_FULL_NAME' => $this->preparedProperties[ 'FullCompany' ]
-                );
+                    // Подготовка полей
+                    $fields = array(
+                        'ENTITY_ID' => $company_id,
+                        'ENTITY_TYPE_ID' => \CCrmOwnerType::Company,
+                        'PRESET_ID' => 1, // 1-Организация, 3-ИП, 5-Физлицо
+                        'NAME' => $this->preparedProperties[ 'Company' ],
+                        'SORT' => 500,
+                        'ACTIVE' => 'Y',
+                        'RQ_COMPANY_NAME' => $this->preparedProperties[ 'Company' ],
+                        'RQ_COMPANY_FULL_NAME' => $this->preparedProperties[ 'FullCompany' ]
+                    );
 
-                //Добавление ИНН, КПП и т.д.
-                $fields['RQ_INN'] = $this->preparedProperties[ 'INN' ];
-                $fields['RQ_KPP'] = $this->preparedProperties[ 'KPP' ];
-                $fields['RQ_OGRN'] = $this->preparedProperties[ 'OGRN' ];
-                $fields['RQ_OKPO'] = $this->preparedProperties[ 'OKPO' ];
+                    //Добавление ИНН, КПП и т.д.
+                    $fields['RQ_INN'] = $this->preparedProperties[ 'INN' ];
+                    $fields['RQ_KPP'] = $this->preparedProperties[ 'KPP' ];
+                    $fields['RQ_OGRN'] = $this->preparedProperties[ 'OGRN' ];
+                    $fields['RQ_OKPO'] = $this->preparedProperties[ 'OKPO' ];
 
-                //Если реквизиты существуют, сначала их удаляем, а потом добавляем, иначе будет несколько инн-ов
-                $requisite->deleteByEntity( CCrmOwnerType::Company, $reqData[ 0 ][ 'ENTITY_ID' ] );
-                $res = $requisite->add( $fields );
-                //Получаем ID добавленных реквизитов
-                $requisite_id = $res->getId();
-                //Если не получилось добавить реквизиты
-                if ( !$requisite_id ) {
-                    $this->log( 'Ошибка добавления реквизитов компании!' );
-                }
-                //В противном случае
-                else
-                {
-                    //Если указан адрес компании
-                    if ( $this->preparedProperties[ 'Address' ] ) {
-                        //Создаем объект адресов
-                        $address = new EntityAddress();
-                        //Готовим массив данных по адресу компании     
-                        $addressFields = array(
-                            "ADDRESS_1" => $this->preparedProperties[ 'Address' ],
-                            "CITY" => $this->preparedProperties[ 'Address' ],
-                            "POSTAL_CODE" => $this->preparedProperties[ 'Address' ],
-                            "COUNTRY" => $this->preparedProperties[ 'Address' ]
-                        );
+                    //Если реквизиты существуют, сначала их удаляем, а потом добавляем, иначе будет несколько инн-ов
+                    $requisite->deleteByEntity( CCrmOwnerType::Company, $reqData[ 0 ][ 'ENTITY_ID' ] );
+                    $res = $requisite->add( $fields );
+                    //Получаем ID добавленных реквизитов
+                    $requisite_id = $res->getId();
+                    //Если не получилось добавить реквизиты
+                    if ( !$requisite_id ) {
+                        $this->log( 'Ошибка добавления реквизитов компании!' );
+                    }
+                    //В противном случае
+                    else {
+                        //Если указан адрес компании
+                        if ( $this->preparedProperties[ 'Address' ] ) {
+                            //Создаем объект адресов
+                            $address = new EntityAddress();
+                            //Готовим массив данных по адресу компании     
+                            $addressFields = array(
+                                "ADDRESS_1" => $this->preparedProperties[ 'Address' ],
+                                "CITY" => $this->preparedProperties[ 'Address' ],
+                                "POSTAL_CODE" => $this->preparedProperties[ 'Address' ],
+                                "COUNTRY" => $this->preparedProperties[ 'Address' ]
+                            );
 
-                        //Регистрируем адрес
-                        //Регистрация адреса: тип 8 (реквизит), тип адреса 6 (юридический)
-                        $addressResult = $address->register(8, $requisite_id, 6, $addressFields);
+                            //Регистрируем адрес
+                            //Регистрация адреса: тип 8 (реквизит), тип адреса 6 (юридический)
+                            $addressResult = $address->register(8, $requisite_id, 6, $addressFields);
 
-                        //Выводим сообщение при ошибке добавления адреса
-                        //НО ЭТО НЕ РАБОТАЕТ ПРОВЕРКА, адрес добавлен отлично, но выводится ошибка
-                        // if ( !$addressResult ) {
-                        //     $this->Log( 'Ошибка добавления адреса к реквизиту' );
-                        // }
+                            //Выводим сообщение при ошибке добавления адреса
+                            //НО ЭТО НЕ РАБОТАЕТ ПРОВЕРКА, адрес добавлен отлично, но выводится ошибка
+                            // if ( !$addressResult ) {
+                            //     $this->Log( 'Ошибка добавления адреса к реквизиту' );
+                            // }
 
-                        $this->log( 'Обновлены реквизиты компании: ' 
-                            . 'Реквизит ID '. $requisite_id
-                            . 'ID '. $company_id
-                            . ', ' . $this->preparedProperties[ 'Company' ]
-                            . ', ИНН: ' . $this->preparedProperties[ 'INN' ] 
-                            . ', КПП: ' . $this->preparedProperties[ 'KPP' ] 
-                            . ', ОКПО: ' . $this->preparedProperties[ 'OKPO' ] 
-                            . ', ОГРН: ' . $this->preparedProperties[ 'OGRN' ] 
-                        );   
-                    }                 
+                            $this->log( 'Обновлены реквизиты компании: ' 
+                                . 'Реквизит ID '. $requisite_id
+                                . 'ID '. $company_id
+                                . ', ' . $this->preparedProperties[ 'Company' ]
+                                . ', ИНН: ' . $this->preparedProperties[ 'INN' ] 
+                                . ', КПП: ' . $this->preparedProperties[ 'KPP' ] 
+                                . ', ОКПО: ' . $this->preparedProperties[ 'OKPO' ] 
+                                . ', ОГРН: ' . $this->preparedProperties[ 'OGRN' ] 
+                            );   
+                        }                 
+                    }
                 }
             }
             else
-                $this->log( 'Организация не обнаружена по ИНН [' . $this->Inn . '] !!!');
+            $this->log( 'Организация с ИНН [' . $this->Inn . '] уже существует');
         }
+        else
+            $this->log( 'Организация не обнаружена по ИНН [' . $this->Inn . '] !!!');
 
         /*
         В Этом нет необходимости для передачи результатов дальше по процессу
