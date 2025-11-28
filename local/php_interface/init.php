@@ -82,10 +82,14 @@ $eventManager->addEventHandler("iblock", "OnAfterIBlockElementUpdate", ['Classes
 //На добавление строки заявки подключаем евент от обновления
 $eventManager->addEventHandler("iblock", "OnAfterIBlockElementAdd", ['Classes\MyEvent',
 'onElementAfterUpdate']);
+//На удаление заявки не делаю, это не логично
 
 //На изменение сделки
 $eventManager->addEventHandler("crm", "OnAfterCrmDealUpdate", ['Classes\MyEvent',
-'onElementAfterUpdateCRM']);
+  'onElementAfterUpdateCRM']);
 //На создание сделки
 $eventManager->addEventHandler("crm", "OnAfterCrmDealAdd", ['Classes\MyEvent',
-'onElementAfterAddCRM']);
+  'onElementAfterAddCRM']);
+//На удаление сделки
+$eventManager->addEventHandler("crm", "OnAfterCrmDealDelete", ['Classes\MyEvent',
+  'onElementAfterDeleteCRM']);

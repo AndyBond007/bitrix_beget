@@ -79,6 +79,32 @@ class MyEvent
         }
     }
 
+    public static function onElementAfterDeleteCRM(&$id)
+    {
+        //Берем текущее время для записи журнала
+        $cur_time =  new DateTime();
+
+        // Указываем ID инфоблока
+        $iblockId = 20;
+        //Подключаем модуль IBlock
+        Loader::includeModule('iblock');
+        
+        $sort = [ 'ID' => 'ASC' ];
+        $filter = [ 'IBLOCK_ID' => $iblockId, 'PROPERTY_SDELKA' => $id ]; 
+        $select = [ 'ID', 'IBLOCK_ID', ];
+        //если элементов несколько с таким значением - это выведет первый
+        $nTopCount = false;
+        //$nTopCount = ['nTopCount' => 1]; можно еще так ограничить
+        $el = CIBlockElement::GetList( $sort, $filter, false, $nTopCount, $select );
+        // Пробегаем по всем элементам таблицы заявок
+        while( $ob = $el->GetNextElement() ) {
+            $elFields = $ob->GetFields();
+            $res = CIBlockElement::Delete($elFields['ID']);
+            if ( $res )
+                file_put_contents( $_SERVER[ 'DOCUMENT_ROOT' ] . '/log_e_from_CRM.txt', 
+                    'Удалили данные по заявке [' . $elFields['ID']. '] в таблице заявок' . "\n", FILE_APPEND );
+        }
+    }
     public static function onElementAfterAddCRM(&$arFields)
     {
         //Берем текущее время для записи журнала
