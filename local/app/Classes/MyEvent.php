@@ -12,7 +12,7 @@ use Bitrix\Main\Type\DateTime;
 
 class MyEvent
 {
-    
+
     public static function onElementAfterUpdate(&$arFields) 
     {
         // Указываем ID инфоблока
@@ -20,6 +20,7 @@ class MyEvent
         
         if ( $iblockId == $arFields[ 'IBLOCK_ID' ] )
         {
+            //Берем текущее время для записи журнала
             $cur_time =  new DateTime();
 
             //Получаю данные по сделке в измененной сроке данных таблицы по индексу
@@ -78,6 +79,41 @@ class MyEvent
         }
     }
 
+    public static function onElementAfterAddCRM(&$arFields)
+    {
+        //Берем текущее время для записи журнала
+        $cur_time =  new DateTime();
+
+        // Указываем ID инфоблока
+        $iblockId = 20;
+        //Подключаем модуль IBlock
+        Loader::includeModule('iblock');
+        
+        $ell = new CIBlockElement;
+
+        //Готовим массив свойств для обновления
+        $PROP = array();
+        $PROP['SDELKA'] = $arFields[ 'ID' ];
+        $PROP['SUMM'] = "".$arFields['OPPORTUNITY'];  
+        $PROP['WORKER'] = $arFields['ASSIGNED_BY_ID'];  
+
+        //Готовим массив для обновления
+        $arLoadProductArray = Array(
+            // "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
+            "IBLOCK_ID" => $iblockId,
+            "IBLOCK_SECTION" => false,           
+            "NAME" => $arFields[ 'TITLE' ],
+            "PROPERTY_VALUES"=> $PROP,
+        );
+        $order_id = $ell->Add( $arLoadProductArray);
+        if ( $order_id ) {
+            file_put_contents( $_SERVER[ 'DOCUMENT_ROOT' ] . '/log_e_from_CRM.txt', 
+                $cur_time . "\n", FILE_APPEND );    
+            file_put_contents( $_SERVER[ 'DOCUMENT_ROOT' ] . '/log_e_from_CRM.txt', 
+                'Добавили данные по заявке [' . $order_id . '] в таблице заявок' . "\n", FILE_APPEND );
+        }
+    }
+
     public static function onElementAfterUpdateCRM(&$arFields) 
     {
         //Берем текущее время для записи журнала
@@ -87,8 +123,7 @@ class MyEvent
         $iblockId = 20;
         //Подключаем модуль IBlock
         Loader::includeModule('iblock');
-
-
+        
         $sort = [ 'ID' => 'ASC' ];
         $filter = [ 'IBLOCK_ID' => $iblockId, 'PROPERTY_SDELKA' => $arFields[ 'ID' ] ]; 
         $select = [ 'ID', 'IBLOCK_ID', 'NAME', 'PROPERTY_SUMM', 'PROPERTY_SDELKA', 'PROPERTY_WORKER' ];

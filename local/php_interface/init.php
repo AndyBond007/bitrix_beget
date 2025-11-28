@@ -76,8 +76,16 @@ CJSCore::Init('doctor_booking');
 
 
 $eventManager = EventManager::getInstance();
+//На изменение строки Заявки
 $eventManager->addEventHandler("iblock", "OnAfterIBlockElementUpdate", ['Classes\MyEvent',
+  'onElementAfterUpdate']);
+//На добавление строки заявки подключаем евент от обновления
+$eventManager->addEventHandler("iblock", "OnAfterIBlockElementAdd", ['Classes\MyEvent',
 'onElementAfterUpdate']);
 
+//На изменение сделки
 $eventManager->addEventHandler("crm", "OnAfterCrmDealUpdate", ['Classes\MyEvent',
 'onElementAfterUpdateCRM']);
+//На создание сделки
+$eventManager->addEventHandler("crm", "OnAfterCrmDealAdd", ['Classes\MyEvent',
+'onElementAfterAddCRM']);
