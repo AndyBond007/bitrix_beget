@@ -10,6 +10,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/local/app/app_loader.php';
 
 //-------------------------------------------------------------------------
 use Bitrix\Main\EventManager;
+use Bitrix\Main\Loader;
 
 $eventManager = EventManager::getInstance();
 
@@ -71,3 +72,12 @@ CJSCore::Init('doctor_booking');
 //     $asset = Asset::getInstance();
 //     $asset->addString('<script>BX.ready(function () { BX.DoctorBooking.helloWorld(); });</script>');
 // }
+
+
+
+$eventManager = EventManager::getInstance();
+$eventManager->addEventHandler("iblock", "OnAfterIBlockElementUpdate", ['Classes\MyEvent',
+'onElementAfterUpdate']);
+
+$eventManager->addEventHandler("crm", "OnAfterCrmDealUpdate", ['Classes\MyEvent',
+'onElementAfterUpdateCRM']);

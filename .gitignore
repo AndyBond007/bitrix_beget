@@ -9,3 +9,4 @@
 #!/bitrix/php_interface/dbconn.php
 #Хранить Upload тоже нет смысла
 /upload/
+/log_*.txt
